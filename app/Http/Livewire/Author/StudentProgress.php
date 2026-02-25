@@ -4,6 +4,8 @@ namespace App\Http\Livewire\Author;
 
 use App\Models\User;
 use App\Models\Curso;
+use App\Models\ExamEvaluation;
+use App\Models\ExamUserAttempt;
 use App\Models\StudentAttempt;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -17,6 +19,7 @@ class StudentProgress extends Component
     public $isOpen = false;
     public $activeTab = 'sessions'; // sessions, evaluations, details
     public $selectedAttempt = null;
+    public $selectedExamAttempt = null;
 
     protected $listeners = ['showProgress'];
 
@@ -39,6 +42,7 @@ class StudentProgress extends Component
     {
         $this->isOpen = false;
         $this->selectedAttempt = null;
+        $this->selectedExamAttempt = null;
     }
 
     public function showAttemptDetails($attemptId)
@@ -56,6 +60,20 @@ class StudentProgress extends Component
     public function closeAttemptDetails()
     {
         $this->selectedAttempt = null;
+        $this->selectedExamAttempt = null;
+    }
+
+    public function showExamAttemptDetails($attemptId)
+    {
+        $this->selectedExamAttempt = ExamUserAttempt::with([
+            'evaluation',
+            'attemptQuestions.question',
+            'attemptQuestions.shownOptions.option',
+            'attemptQuestions.answer',
+        ])->find($attemptId);
+
+        $this->selectedAttempt = null;
+        $this->activeTab = 'evaluations';
     }
 
     public function grantExtraAttempt($evaluationId)
@@ -84,26 +102,34 @@ class StudentProgress extends Component
 
     public function render()
     {
-        $attempts = [];
         $sessions = [];
+        $useNewEngine = false;
         
         if ($this->student && $this->course) {
-            
-            $attempts = []; // Deprecated, using evaluations collection
-            
             $sectionIds = $this->course->Seccion_curso->pluck('id');
-            
-            // Fetch evaluations with this student's attempts
+
+            $examEvaluationsList = ExamEvaluation::where(function ($query) use ($sectionIds) {
+                    $query->where('course_id', $this->course->id)
+                        ->orWhereIn('section_id', $sectionIds);
+                })
+                ->whereIn('context_type', ['course_final', 'course_section'])
+                ->where('user_id', $this->course->user_id)
+                ->with(['userAttempts' => function($q) {
+                    $q->where('user_id', $this->student->id)->orderBy('created_at', 'desc');
+                }])
+                ->paginate(5, ['*'], 'evaluationsPage');
+
+            $useNewEngine = $examEvaluationsList->total() > 0;
+
             $evaluationsList = \App\Models\Evaluation::where('course_id', $this->course->id)
-                            ->orWhereIn('section_id', $sectionIds)
-                            ->with(['attempts' => function($q) {
-                                $q->where('user_id', $this->student->id)->orderBy('created_at', 'desc');
-                            }])
-                            // Also fetch existing exceptions
-                            ->with(['exceptions' => function($q) {
-                                $q->where('user_id', $this->student->id);
-                            }])
-                            ->paginate(5, ['*'], 'evaluationsPage');
+                ->orWhereIn('section_id', $sectionIds)
+                ->with(['attempts' => function($q) {
+                    $q->where('user_id', $this->student->id)->orderBy('created_at', 'desc');
+                }])
+                ->with(['exceptions' => function($q) {
+                    $q->where('user_id', $this->student->id);
+                }])
+                ->paginate(5, ['*'], 'legacyEvaluationsPage');
 
             // 2. Sessions Logic (Fetch recent sessions)
             $sessions = \App\Models\CourseSession::where('user_id', $this->student->id)
@@ -135,6 +161,8 @@ class StudentProgress extends Component
         }
 
         return view('livewire.author.student-progress', [
+            'useNewEngine' => $useNewEngine,
+            'examEvaluations' => $examEvaluationsList ?? [],
             'evaluations' => $evaluationsList ?? [],
             'sessions' => $sessions,
             'courseDetails' => $courseDetails ?? []

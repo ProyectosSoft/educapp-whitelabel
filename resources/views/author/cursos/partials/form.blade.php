@@ -74,14 +74,77 @@
                     </button>
                 </div>
             </div>
-            {{-- <div>
+            <div>
                 {!! Form::label('garantia_id', 'Garantía', ['class' => 'block mb-2 text-sm font-bold text-gray-700']) !!}
                 {!! Form::select('garantia_id', $garantias, null, ['class' => 'bg-white border border-gray-300 text-gray-700 text-sm rounded-xl focus:ring-[#335A92] focus:border-[#335A92] block w-full p-3']) !!}
-            </div> --}}
-            {{-- <div>
+                @error('garantia_id') <p class="mt-1 text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
+            </div>
+            <div>
                 {!! Form::label('tipo_formato_id', 'Formato', ['class' => 'block mb-2 text-sm font-bold text-gray-700']) !!}
                 {!! Form::select('tipo_formato_id', $tipo_formatos, null, ['class' => 'bg-white border border-gray-300 text-gray-700 text-sm rounded-xl focus:ring-[#335A92] focus:border-[#335A92] block w-full p-3']) !!}
-            </div> --}}
+                @error('tipo_formato_id') <p class="mt-1 text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
+            </div>
+        </div>
+    </div>
+
+    {{-- Sección 2.1: Configuración de Visibilidad --}}
+    @php
+        $selectedEmpresaId = old('empresa_id', isset($course) ? $course->empresa_id : null);
+        $selectedDepartamentoId = old('departamento_id', isset($course) ? $course->departamento_id : null);
+        $isPublicChecked = old('is_public', isset($course) ? (bool) $course->is_public : true);
+
+        $departamentosForSelected = collect();
+        if (!empty($selectedEmpresaId)) {
+            $departamentosForSelected = $allDepartamentos->where('empresa_id', (int) $selectedEmpresaId);
+        }
+    @endphp
+    <div class="bg-gray-50/50 p-8 rounded-2xl border border-gray-100">
+        <h3 class="text-lg font-bold text-[#335A92] mb-6 flex items-center">
+            <i class="fas fa-eye mr-2"></i> Configuración de Visibilidad
+        </h3>
+
+        <div class="space-y-5">
+            <label class="flex items-center gap-4 cursor-pointer">
+                <div class="relative inline-flex items-center">
+                    {!! Form::checkbox('is_public', 1, $isPublicChecked, [
+                        'id' => 'is_public',
+                        'class' => 'sr-only peer',
+                    ]) !!}
+                    <div class="w-12 h-7 bg-gray-300 rounded-full peer peer-checked:bg-indigo-600 transition-colors"></div>
+                    <div class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+                </div>
+                <span class="text-lg text-gray-700">
+                    Curso Público (Visible para todos en la página de inicio)
+                </span>
+            </label>
+
+            <div id="visibility-restrictions" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    {!! Form::label('empresa_id', 'Empresa', ['class' => 'block mb-2 text-sm font-bold text-gray-700']) !!}
+                    {!! Form::select('empresa_id', ['' => 'Seleccione una empresa'] + $empresas->toArray(), $selectedEmpresaId, [
+                        'id' => 'empresa_id',
+                        'class' => 'bg-white border border-gray-300 text-gray-700 text-sm rounded-xl focus:ring-[#335A92] focus:border-[#335A92] block w-full p-3',
+                    ]) !!}
+                    @error('empresa_id') <p class="mt-1 text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    {!! Form::label('departamento_id', 'Departamento', ['class' => 'block mb-2 text-sm font-bold text-gray-700']) !!}
+                    <select
+                        name="departamento_id"
+                        id="departamento_id"
+                        class="bg-white border border-gray-300 text-gray-700 text-sm rounded-xl focus:ring-[#335A92] focus:border-[#335A92] block w-full p-3"
+                    >
+                        <option value="">Todos los departamentos</option>
+                        @foreach($departamentosForSelected as $depto)
+                            <option value="{{ $depto->id }}" {{ (string) $selectedDepartamentoId === (string) $depto->id ? 'selected' : '' }}>
+                                {{ $depto->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('departamento_id') <p class="mt-1 text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
+                </div>
+            </div>
         </div>
     </div>
 

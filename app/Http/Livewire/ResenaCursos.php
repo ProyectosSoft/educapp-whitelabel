@@ -5,7 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Curso;
 
-class ReseñaCursos extends Component
+class ResenaCursos extends Component
 {
     public $course_id, $comment;
 
@@ -18,7 +18,7 @@ class ReseñaCursos extends Component
     public function render()
     {
         $course = Curso::find($this->course_id);
-        return view('livewire.reseña-cursos', compact('course'));
+        return view('livewire.resena-cursos', compact('course'));
     }
 
     public function store()

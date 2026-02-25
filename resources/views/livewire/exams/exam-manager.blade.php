@@ -46,7 +46,8 @@
                 <thead class="text-xs text-slate-500 uppercase bg-gray-50 border-b border-gray-200">
                     <tr>
                         <th class="px-6 py-4 font-bold tracking-wider">Nombre</th>
-                        <th class="px-6 py-4 font-bold tracking-wider">Examen Padre</th>
+                        <th class="px-6 py-4 font-bold tracking-wider">Tipo</th>
+                        <th class="px-6 py-4 font-bold tracking-wider">Contexto</th>
                         <th class="px-6 py-4 font-bold tracking-wider">Configuración</th>
                         <th class="px-6 py-4 text-center font-bold tracking-wider">Estado</th>
                         <th class="px-6 py-4 text-center font-bold tracking-wider">Acciones</th>
@@ -56,7 +57,22 @@
                     @forelse($evaluations as $eval)
                         <tr class="hover:bg-slate-50 transition duration-150">
                             <td class="px-6 py-4 font-bold text-slate-700 text-base">{{ $eval->name }}</td>
-                            <td class="px-6 py-4 text-slate-600">{{ $eval->exam->name ?? 'N/A' }}</td>
+                            <td class="px-6 py-4 text-slate-600">
+                                @if(($eval->context_type ?? 'standalone') === 'standalone')
+                                    Certificado
+                                @else
+                                    Curso
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-slate-600">
+                                @if(($eval->context_type ?? 'standalone') === 'course_final')
+                                    {{ $eval->course->nombre ?? 'Curso eliminado' }} · Final
+                                @elseif(($eval->context_type ?? 'standalone') === 'course_section')
+                                    {{ $eval->course->nombre ?? 'Curso eliminado' }} · {{ $eval->section->nombre ?? 'Sección eliminada' }}
+                                @else
+                                    {{ $eval->exam->name ?? 'N/A' }}
+                                @endif
+                            </td>
                             <td class="px-6 py-4 text-xs text-slate-500">
                                 <div class="flex flex-col space-y-1.5">
                                     <span class="flex items-center"><i class="fas fa-redo-alt w-4 mr-1.5 text-[#335A92]"></i> Intentos: <strong class="ml-1">{{ $eval->max_attempts }}</strong></span>
@@ -90,7 +106,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-16 text-center">
+                            <td colspan="6" class="px-6 py-16 text-center">
                                 <div class="flex flex-col items-center justify-center">
                                     <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
                                         <i class="fas fa-clipboard-list text-3xl text-slate-300"></i>
@@ -129,6 +145,69 @@
                         <label class="block text-sm font-bold text-slate-700 mb-2">Nombre de la Evaluación</label>
                         <input type="text" wire:model="evalName" class="w-full bg-slate-50 border border-gray-200 rounded-xl px-4 py-3 text-slate-700 focus:ring-[#335A92] focus:border-[#335A92] transition-colors placeholder-slate-400" placeholder="Ej: Examen Final de Matemáticas">
                         @error('evalName') <span class="text-red-500 text-xs mt-1 block font-bold">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-gray-200">
+                        <h4 class="text-[#335A92] font-bold mb-4 flex items-center"><i class="fas fa-sitemap mr-2"></i> Tipo y Contexto</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-1">
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Tipo</label>
+                                <select wire:model="evalTargetType" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-slate-700 focus:ring-[#335A92] focus:border-[#335A92]">
+                                    <option value="certificate">Certificado</option>
+                                    @if($supportsCourseContext)
+                                        <option value="course">Curso</option>
+                                    @endif
+                                </select>
+                                @error('evalTargetType') <span class="text-red-500 text-xs mt-1 block font-bold">{{ $message }}</span> @enderror
+                                @unless($supportsCourseContext)
+                                    <p class="text-[11px] text-yellow-700 mt-1">Ejecuta migraciones para habilitar evaluaciones ligadas a cursos.</p>
+                                @endunless
+                            </div>
+
+                            @if($evalTargetType === 'course')
+                                <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Curso</label>
+                                        <select wire:model="evalCourseId" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-slate-700 focus:ring-[#335A92] focus:border-[#335A92]">
+                                            <option value="">Seleccione curso</option>
+                                            @foreach($courses as $course)
+                                                <option value="{{ $course->id }}">{{ $course->nombre }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('evalCourseId') <span class="text-red-500 text-xs mt-1 block font-bold">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Alcance</label>
+                                        <select wire:model="evalScope" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-slate-700 focus:ring-[#335A92] focus:border-[#335A92]">
+                                            <option value="final">Curso completo</option>
+                                            <option value="section">Sección</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="md:col-span-3">
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Habilitación de Inicio</label>
+                                    <select wire:model="evalStartMode" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-slate-700 focus:ring-[#335A92] focus:border-[#335A92]">
+                                        <option value="automatic">Automático (al finalizar lecciones)</option>
+                                        <option value="manual">Manual (botón iniciar desde el curso)</option>
+                                    </select>
+                                    @error('evalStartMode') <span class="text-red-500 text-xs mt-1 block font-bold">{{ $message }}</span> @enderror
+                                </div>
+
+                                @if($evalScope === 'section')
+                                    <div class="md:col-span-3">
+                                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Sección</label>
+                                        <select wire:model="evalSectionId" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-slate-700 focus:ring-[#335A92] focus:border-[#335A92]">
+                                            <option value="">Seleccione sección</option>
+                                            @foreach($sectionsFilter as $section)
+                                                <option value="{{ $section->id }}">{{ $section->nombre }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('evalSectionId') <span class="text-red-500 text-xs mt-1 block font-bold">{{ $message }}</span> @enderror
+                                    </div>
+                                @endif
+                            @endif
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

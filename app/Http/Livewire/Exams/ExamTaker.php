@@ -20,12 +20,24 @@ class ExamTaker extends Component
     public $questions = [];
     public $answers = []; // [attempt_question_id => val]
     public $timeLeft = 0;
+    public $currentQuestionIndex = 0;
 
     public function mount(ExamEvaluation $evaluation)
     {
         // Security: Prevent taking inactive exams unless instructor
         if (!$evaluation->is_active && $evaluation->user_id !== Auth::id()) {
             abort(403, 'Esta evaluación no está activa.');
+        }
+
+        // For course-linked evaluations, enforce enrollment or ownership.
+        if ($evaluation->course_id) {
+            $course = $evaluation->course;
+            $isOwner = $evaluation->user_id === Auth::id() || ($course && $course->user_id === Auth::id());
+            $isEnrolled = $course ? $course->students()->where('users.id', Auth::id())->exists() : false;
+
+            if (!$isOwner && !$isEnrolled) {
+                abort(403, 'No tienes acceso a esta evaluación de curso.');
+            }
         }
 
         $this->evaluation = $evaluation;
@@ -59,6 +71,10 @@ class ExamTaker extends Component
             $this->questions = $this->currentAttempt->attemptQuestions()
                 ->with(['question', 'shownOptions.option'])
                 ->get();
+
+            $this->normalizeCurrentQuestionIndex();
+        } else {
+            $this->currentQuestionIndex = 0;
         }
     }
 
@@ -159,9 +175,44 @@ class ExamTaker extends Component
         $this->loadCurrentAttempt();
     }
 
+    public function nextQuestion()
+    {
+        $total = collect($this->questions)->count();
+        if ($total === 0) {
+            return;
+        }
+
+        if ($this->currentQuestionIndex < ($total - 1)) {
+            $this->currentQuestionIndex++;
+        }
+    }
+
+    public function previousQuestion()
+    {
+        if ($this->currentQuestionIndex > 0) {
+            $this->currentQuestionIndex--;
+        }
+    }
+
+    public function goToQuestion($index)
+    {
+        $total = collect($this->questions)->count();
+        if ($total === 0) {
+            return;
+        }
+
+        $index = (int) $index;
+        $this->currentQuestionIndex = max(0, min($index, $total - 1));
+    }
+
     public function submit()
     {
         if (!$this->currentAttempt) return;
+
+        if ($this->unansweredCount > 0) {
+            session()->flash('error', "Debes responder todas las preguntas. Pendientes: {$this->unansweredCount}.");
+            return;
+        }
 
         DB::transaction(function () {
             $hasOpenQuestions = false;
@@ -297,5 +348,58 @@ class ExamTaker extends Component
         
         session()->flash('error', 'Evaluación anulada: ' . $reason);
         return redirect()->route('exams.index');
+    }
+
+    public function getTotalQuestionsProperty(): int
+    {
+        return collect($this->questions)->count();
+    }
+
+    public function getUnansweredCountProperty(): int
+    {
+        $questions = collect($this->questions);
+        if ($questions->isEmpty()) {
+            return 0;
+        }
+
+        return $questions->filter(function ($aq) {
+            return !$this->isAttemptQuestionAnswered($aq);
+        })->count();
+    }
+
+    public function getCanSubmitProperty(): bool
+    {
+        return $this->totalQuestions > 0
+            && $this->currentQuestionIndex === ($this->totalQuestions - 1)
+            && $this->unansweredCount === 0;
+    }
+
+    private function normalizeCurrentQuestionIndex(): void
+    {
+        $total = collect($this->questions)->count();
+        if ($total === 0) {
+            $this->currentQuestionIndex = 0;
+            return;
+        }
+
+        if ($this->currentQuestionIndex < 0) {
+            $this->currentQuestionIndex = 0;
+            return;
+        }
+
+        if ($this->currentQuestionIndex > ($total - 1)) {
+            $this->currentQuestionIndex = $total - 1;
+        }
+    }
+
+    private function isAttemptQuestionAnswered($attemptQuestion): bool
+    {
+        $value = $this->answers[$attemptQuestion->id] ?? null;
+
+        if ($attemptQuestion->question->type === 'open') {
+            return is_string($value) && trim($value) !== '';
+        }
+
+        return !is_null($value) && $value !== '';
     }
 }

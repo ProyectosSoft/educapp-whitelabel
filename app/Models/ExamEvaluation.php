@@ -12,6 +12,11 @@ class ExamEvaluation extends Model
 
     protected $fillable = [
         'exam_id',
+        'course_id',
+        'section_id',
+        'context_type',
+        'start_mode',
+        'is_visible',
         'name',
         'max_attempts',
         'wait_time_minutes',
@@ -24,6 +29,7 @@ class ExamEvaluation extends Model
         'user_id',
         'categoria_id',
         'subcategoria_id',
+        'internal_category_id',
     ];
 
     public function instructor()
@@ -54,6 +60,21 @@ class ExamEvaluation extends Model
     public function exam()
     {
         return $this->belongsTo(Exam::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Curso::class, 'course_id');
+    }
+
+    public function section()
+    {
+        return $this->belongsTo(Seccion_curso::class, 'section_id');
+    }
+
+    public function internalCategory()
+    {
+        return $this->belongsTo(ExamCategory::class, 'internal_category_id');
     }
 
     // Refactored to belongsToMany for Question Bank support

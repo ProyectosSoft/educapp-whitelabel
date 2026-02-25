@@ -113,7 +113,7 @@
                                         <div>
                                             <div class=" py-2 px-4">
                             </section>
-                            @livewire('reseña-cursos', ['course' => $course])
+                            @livewire('resena-cursos', ['course' => $course])
                         </div>
                         <div class="order-1 lg:order-2">
                             <section class="bg-white shadow-lg rounded-3xl overflow-hidden mb-4">
@@ -338,7 +338,7 @@
                             <div>
                                 <div class=" py-2 px-4">
                 </section>
-                @livewire('reseña-cursos', ['course' => $course])
+                @livewire('resena-cursos', ['course' => $course])
             </div>
             <div class="order-1 lg:order-2">
                 <section class="bg-white shadow-lg rounded-3xl overflow-hidden mb-4">

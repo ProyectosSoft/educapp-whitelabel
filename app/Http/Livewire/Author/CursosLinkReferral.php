@@ -36,7 +36,7 @@ class CursosLinkReferral extends Component
         if ($this->search) {
             $referralcodes->where('nombre', 'LIKE', '%' . $this->search . '%');
         }
-         return view('livewire.author.cursos-link-referral',compact('referralcodes'))->layout('layouts.author', ['course' => $this->course]);;
+         return view('livewire.author.cursos-link-referral',compact('referralcodes'))->layout('layouts.instructor-tailwind');
     }
 
     public function abrirFormulario()

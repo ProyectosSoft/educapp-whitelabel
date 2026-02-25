@@ -140,7 +140,54 @@
 
                                 {{-- Tab Content: Evaluations --}}
                                 @if($activeTab === 'evaluations')
-                                    @if($selectedAttempt)
+                                    @if($selectedExamAttempt)
+                                        <div class="mt-4">
+                                            <button wire:click="closeAttemptDetails" class="mb-4 text-sm text-indigo-600 hover:text-indigo-800 flex items-center">
+                                                <i class="fas fa-arrow-left mr-2"></i> Volver al historial
+                                            </button>
+
+                                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                                                    <div>
+                                                        <h4 class="font-bold text-gray-800 text-lg">{{ $selectedExamAttempt->evaluation->name }}</h4>
+                                                        <div class="flex items-center mt-1 space-x-2">
+                                                            <span class="px-2 py-1 text-xs rounded-full {{ $selectedExamAttempt->is_approved ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                                {{ $selectedExamAttempt->is_approved ? 'Aprobado' : 'No aprobado' }}
+                                                                ({{ $selectedExamAttempt->final_score ?? 0 }}%)
+                                                            </span>
+                                                            <span class="px-2 py-1 text-xs rounded-full bg-gray-200 text-gray-700">
+                                                                Estado: {{ $selectedExamAttempt->status }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="space-y-4">
+                                                    @foreach($selectedExamAttempt->attemptQuestions as $index => $attemptQuestion)
+                                                        @php
+                                                            $q = $attemptQuestion->question;
+                                                            $answer = $attemptQuestion->answer;
+                                                            $selectedOption = null;
+                                                            if ($answer && $answer->selected_option_id) {
+                                                                $selectedOption = optional($attemptQuestion->shownOptions->firstWhere('option_id', $answer->selected_option_id))->option;
+                                                            }
+                                                        @endphp
+                                                        <div class="bg-white p-3 rounded shadow-sm border border-gray-200">
+                                                            <p class="font-bold text-sm text-gray-700 mb-2">{{ $index + 1 }}. {{ $q?->question_text }}</p>
+                                                            <div class="ml-4 text-sm text-gray-600">
+                                                                @if($q && $q->type === 'open')
+                                                                    <p>Respuesta abierta: {{ $answer?->text_answer ?: 'Sin respuesta' }}</p>
+                                                                @else
+                                                                    <p>Respuesta seleccionada: {{ $selectedOption?->option_text ?? 'Sin respuesta' }}</p>
+                                                                @endif
+                                                                <p class="text-xs text-gray-500 mt-1">Puntaje: {{ $answer?->score_obtained ?? 0 }} / {{ $attemptQuestion->max_score }}</p>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @elseif($selectedAttempt)
                                         <!-- Detalle del Intento -->
                                         <div class="mt-4">
                                             <button wire:click="closeAttemptDetails" class="mb-4 text-sm text-indigo-600 hover:text-indigo-800 flex items-center">
@@ -207,7 +254,6 @@
                                             </div>
                                         </div>
                                     @else
-                                        <!-- Lista de Evaluaciones -->
                                         <div class="mt-4">
                                             <div class="overflow-hidden border border-gray-200 rounded-lg">
                                                 <table class="min-w-full divide-y divide-gray-200">
@@ -221,81 +267,97 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody class="bg-white divide-y divide-gray-200">
-                                                        @forelse($evaluations as $eval)
-                                                            @php
-                                                                $attemptsTaken = $eval->attempts->count();
-                                                                $latestAttempt = $eval->attempts->first(); // Ordered by desc in query
-                                                                $extraAttempts = $eval->exceptions->first()->extra_attempts ?? 0;
-                                                                $maxAttempts = $eval->max_attempts + $extraAttempts;
-                                                                $passed = $eval->attempts->where('passed', true)->isNotEmpty();
-                                                                $canGrant = $attemptsTaken >= $maxAttempts;
-                                                            @endphp
-                                                            <tr>
-                                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                                    {{ $eval->name }}
-                                                                    @if($extraAttempts > 0)
-                                                                        <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800" title="Se han concedido {{ $extraAttempts }} intentos extra">
-                                                                            +{{ $extraAttempts }} extra
-                                                                        </span>
-                                                                    @endif
-                                                                </td>
-                                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                                    @if($passed)
-                                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aprobado</span>
-                                                                    @elseif($attemptsTaken > 0)
-                                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Reprobado</span>
-                                                                    @else
-                                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Sin iniciar</span>
-                                                                    @endif
-                                                                </td>
-                                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                                    <span class="{{ $attemptsTaken >= $maxAttempts ? 'text-red-600 font-bold' : '' }}">
-                                                                        {{ $attemptsTaken }}
-                                                                    </span> 
-                                                                    / {{ $maxAttempts }}
-                                                                    @if($attemptsTaken >= $eval->max_attempts && $extraAttempts == 0)
-                                                                         <i class="fas fa-exclamation-circle text-red-500 ml-1" title="Límite alcanzado"></i>
-                                                                    @endif
-                                                                </td>
-                                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">
-                                                                    {{ $latestAttempt ? $latestAttempt->score . '%' : '-' }}
-                                                                </td>
-                                                                <td class="px-6 py-4 text-right text-sm font-medium">
-                                                                    <div class="flex flex-wrap justify-end gap-2">
-                                                                        @if($canGrant)
-                                                                            <button wire:click="grantExtraAttempt({{ $eval->id }})" class="text-green-600 hover:text-green-900 font-bold text-xs border border-green-600 rounded px-2 py-1 hover:bg-green-50 transition whitespace-nowrap">
-                                                                                <i class="fas fa-plus-circle"></i> +1
-                                                                            </button>
+                                                        @if($useNewEngine)
+                                                            @forelse($examEvaluations as $eval)
+                                                                @php
+                                                                    $attemptsTaken = $eval->userAttempts->count();
+                                                                    $latestAttempt = $eval->userAttempts->first();
+                                                                    $maxAttempts = $eval->max_attempts;
+                                                                    $approved = $eval->userAttempts->where('is_approved', true)->isNotEmpty();
+                                                                @endphp
+                                                                <tr>
+                                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $eval->name }}</td>
+                                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                                        @if($approved)
+                                                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aprobado</span>
+                                                                        @elseif($attemptsTaken > 0)
+                                                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">No aprobado</span>
+                                                                        @else
+                                                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Sin iniciar</span>
                                                                         @endif
-                                                                        
+                                                                    </td>
+                                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $attemptsTaken }} / {{ $maxAttempts }}</td>
+                                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">{{ $latestAttempt ? ($latestAttempt->final_score ?? 0) . '%' : '-' }}</td>
+                                                                    <td class="px-6 py-4 text-right text-sm font-medium">
                                                                         @if($latestAttempt)
-                                                                            <button wire:click="showAttemptDetails({{ $latestAttempt->id }})" class="text-indigo-600 hover:text-indigo-900 border border-indigo-600 rounded px-2 py-1 text-xs font-medium bg-indigo-50 hover:bg-indigo-100 transition whitespace-nowrap">
+                                                                            <button wire:click="showExamAttemptDetails({{ $latestAttempt->id }})" class="text-indigo-600 hover:text-indigo-900 border border-indigo-600 rounded px-2 py-1 text-xs font-medium bg-indigo-50 hover:bg-indigo-100 transition whitespace-nowrap">
                                                                                 <i class="fas fa-eye mr-1"></i> Detalles
                                                                             </button>
                                                                         @else
                                                                             <span class="text-gray-400 cursor-not-allowed self-center">Sin intentos</span>
                                                                         @endif
-
-                                                                        @if($passedAttempt = $eval->attempts->where('passed', true)->first())
-                                                                            @if($eval->course_id)
-                                                                                <a href="{{ route('certificates.download', ['attempt' => $passedAttempt->id]) }}" target="_blank" class="text-purple-600 hover:text-purple-900 border border-purple-600 rounded px-2 py-1 text-xs font-medium bg-purple-50 hover:bg-purple-100 transition whitespace-nowrap" title="Ver Certificado">
-                                                                                    <i class="fas fa-certificate mr-1"></i> Certif.
-                                                                                </a>
-                                                                            @endif
+                                                                    </td>
+                                                                </tr>
+                                                            @empty
+                                                                <tr>
+                                                                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No hay evaluaciones configuradas para este curso.</td>
+                                                                </tr>
+                                                            @endforelse
+                                                        @else
+                                                            @forelse($evaluations as $eval)
+                                                                @php
+                                                                    $attemptsTaken = $eval->attempts->count();
+                                                                    $latestAttempt = $eval->attempts->first();
+                                                                    $extraAttempts = $eval->exceptions->first()->extra_attempts ?? 0;
+                                                                    $maxAttempts = $eval->max_attempts + $extraAttempts;
+                                                                    $passed = $eval->attempts->where('passed', true)->isNotEmpty();
+                                                                    $canGrant = $attemptsTaken >= $maxAttempts;
+                                                                @endphp
+                                                                <tr>
+                                                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                                        {{ $eval->name }}
+                                                                        @if($extraAttempts > 0)
+                                                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">+{{ $extraAttempts }} extra</span>
                                                                         @endif
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        @empty
-                                                            <tr>
-                                                                <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No hay evaluaciones configuradas para este curso.</td>
-                                                            </tr>
-                                                        @endforelse
+                                                                    </td>
+                                                                    <td class="px-6 py-4 whitespace-nowrap">
+                                                                        @if($passed)
+                                                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Aprobado</span>
+                                                                        @elseif($attemptsTaken > 0)
+                                                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Reprobado</span>
+                                                                        @else
+                                                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Sin iniciar</span>
+                                                                        @endif
+                                                                    </td>
+                                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $attemptsTaken }} / {{ $maxAttempts }}</td>
+                                                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">{{ $latestAttempt ? $latestAttempt->score . '%' : '-' }}</td>
+                                                                    <td class="px-6 py-4 text-right text-sm font-medium">
+                                                                        <div class="flex flex-wrap justify-end gap-2">
+                                                                            @if($canGrant)
+                                                                                <button wire:click="grantExtraAttempt({{ $eval->id }})" class="text-green-600 hover:text-green-900 font-bold text-xs border border-green-600 rounded px-2 py-1 hover:bg-green-50 transition whitespace-nowrap">
+                                                                                    <i class="fas fa-plus-circle"></i> +1
+                                                                                </button>
+                                                                            @endif
+
+                                                                            @if($latestAttempt)
+                                                                                <button wire:click="showAttemptDetails({{ $latestAttempt->id }})" class="text-indigo-600 hover:text-indigo-900 border border-indigo-600 rounded px-2 py-1 text-xs font-medium bg-indigo-50 hover:bg-indigo-100 transition whitespace-nowrap">
+                                                                                    <i class="fas fa-eye mr-1"></i> Detalles
+                                                                                </button>
+                                                                            @endif
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            @empty
+                                                                <tr>
+                                                                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No hay evaluaciones configuradas para este curso.</td>
+                                                                </tr>
+                                                            @endforelse
+                                                        @endif
                                                     </tbody>
                                                 </table>
                                             </div>
                                             <div class="mt-4">
-                                                {{ $evaluations->links() }}
+                                                {{ $useNewEngine ? $examEvaluations->links() : $evaluations->links() }}
                                             </div>
                                         </div>
                                     @endif

@@ -143,6 +143,16 @@ class Curso extends Model
         return $this->hasMany('App\Models\Evaluation', 'course_id');
     }
 
+    public function examEvaluations()
+    {
+        return $this->hasMany('App\Models\ExamEvaluation', 'course_id');
+    }
+
+    public function examFinalEvaluations()
+    {
+        return $this->examEvaluations()->where('context_type', 'course_final');
+    }
+
     public function empresa()
     {
         return $this->belongsTo('App\Models\Empresa');

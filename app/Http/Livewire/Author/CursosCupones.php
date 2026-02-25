@@ -37,7 +37,7 @@ class CursosCupones extends Component
         }
         $cupones = $cupones->paginate(4);
 
-        return view('livewire.author.cursos-cupones', compact('cupones'))->layout('layouts.author', ['course' => $this->course]);
+        return view('livewire.author.cursos-cupones', compact('cupones'))->layout('layouts.instructor-tailwind');
     }
 
 

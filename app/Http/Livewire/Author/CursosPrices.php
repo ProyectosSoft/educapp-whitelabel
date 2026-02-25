@@ -35,7 +35,7 @@ class CursosPrices extends Component
         $prices = Price::with('moneda')
                 ->where('user_id', $idUsuario)
                 ->get();
-        return view('livewire.author.cursos-prices',compact('prices','monedas'))->layout('layouts.author',['course'=>$this->course]);
+        return view('livewire.author.cursos-prices',compact('prices','monedas'))->layout('layouts.instructor-tailwind');
     }
 
     public function abrirFormulario()

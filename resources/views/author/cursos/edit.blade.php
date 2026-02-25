@@ -6,8 +6,11 @@
             <a href="{{ route('author.cursos.index') }}" class="hover:text-[#335A92] transition-colors"><i class="fas fa-arrow-left mr-2"></i> Volver a mis cursos</a>
         </div>
 
-        {{-- Card Principal --}}
-        <div class="bg-white rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden relative">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            @include('author.cursos.partials.edition-sidebar', ['course' => $course])
+
+            {{-- Card Principal --}}
+            <div class="lg:col-span-9 bg-white rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden relative">
             
             {{-- Header Corporativo --}}
             <div class="bg-[#335A92] px-10 py-8 relative overflow-hidden flex justify-between items-center">
@@ -41,6 +44,7 @@
                         </button>
                     </div>
                 {!! Form::close() !!}
+            </div>
             </div>
         </div>
     </div>
@@ -89,6 +93,65 @@
             function validarImagen(input) {
                 // Validacion igual a create
             }
+
+            @php
+                $allDepartamentosJs = $allDepartamentos->map(function ($d) {
+                    return [
+                        'id' => $d->id,
+                        'nombre' => $d->nombre,
+                        'empresa_id' => $d->empresa_id,
+                    ];
+                })->values()->toArray();
+            @endphp
+            const allDepartamentos = @json($allDepartamentosJs);
+
+            function renderDepartamentosByEmpresa(empresaId) {
+                const deptSelect = document.getElementById('departamento_id');
+                if (!deptSelect) return;
+
+                const currentValue = deptSelect.value;
+                const filtered = allDepartamentos.filter(d => String(d.empresa_id) === String(empresaId));
+
+                deptSelect.innerHTML = '<option value="">Todos los departamentos</option>';
+                filtered.forEach(dep => {
+                    const opt = document.createElement('option');
+                    opt.value = dep.id;
+                    opt.textContent = dep.nombre;
+                    if (String(currentValue) === String(dep.id)) opt.selected = true;
+                    deptSelect.appendChild(opt);
+                });
+            }
+
+            function setupVisibilitySection() {
+                const visibilityToggle = document.getElementById('is_public');
+                const restrictions = document.getElementById('visibility-restrictions');
+                const empresaSelect = document.getElementById('empresa_id');
+                const deptSelect = document.getElementById('departamento_id');
+                if (!visibilityToggle || !restrictions || !empresaSelect || !deptSelect) return;
+
+                const updateVisibility = () => {
+                    const isPublic = visibilityToggle.checked;
+                    restrictions.style.display = isPublic ? 'none' : 'grid';
+                    empresaSelect.disabled = isPublic;
+                    deptSelect.disabled = isPublic;
+
+                    if (isPublic) {
+                        empresaSelect.value = '';
+                        deptSelect.innerHTML = '<option value="">Todos los departamentos</option>';
+                    } else {
+                        renderDepartamentosByEmpresa(empresaSelect.value);
+                    }
+                };
+
+                empresaSelect.addEventListener('change', () => {
+                    renderDepartamentosByEmpresa(empresaSelect.value);
+                });
+
+                visibilityToggle.addEventListener('change', updateVisibility);
+                updateVisibility();
+            }
+
+            setupVisibilitySection();
         </script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>

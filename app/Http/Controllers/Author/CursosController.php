@@ -75,6 +75,8 @@ class CursosController extends Controller
             'categoria_id' => 'required',
             'nivel_id' => 'required',
             'precio_id' => 'required',
+            'garantia_id' => 'nullable|exists:garantias,id',
+            'tipo_formato_id' => 'nullable|exists:tipo_formatos,id',
             'file' => 'image',
             'empresa_id' => 'nullable|exists:empresas,id',
             'departamento_id' => 'nullable|exists:departamentos,id',
@@ -83,6 +85,20 @@ class CursosController extends Controller
         $data = $request->all();
         $data['is_public'] = $request->has('is_public'); // Checkbox handling
         $data['precio_id'] = $request->precio_id; 
+        $data['garantia_id'] = $request->filled('garantia_id')
+            ? $request->garantia_id
+            : Garantia::query()->value('id');
+        $data['tipo_formato_id'] = $request->filled('tipo_formato_id')
+            ? $request->tipo_formato_id
+            : Tipo_formato::query()->value('id');
+
+        if (!$data['garantia_id'] || !$data['tipo_formato_id']) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'garantia_id' => 'No hay configuración base de garantía o formato para crear el curso.',
+                ]);
+        }
         
         // Si es público, limpiar empresa y depto aunque vengan
         if ($data['is_public']) {

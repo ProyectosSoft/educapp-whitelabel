@@ -24,6 +24,17 @@ class ExamSummary extends Component
              abort(403, 'Esta evaluación no está disponible actualmente.');
         }
 
+        // For course-linked evaluations, enforce enrollment or ownership.
+        if ($evaluation->course_id) {
+            $course = $evaluation->course;
+            $isOwner = $evaluation->user_id === Auth::id() || ($course && $course->user_id === Auth::id());
+            $isEnrolled = $course ? $course->students()->where('users.id', Auth::id())->exists() : false;
+
+            if (!$isOwner && !$isEnrolled) {
+                abort(403, 'No tienes acceso a esta evaluación de curso.');
+            }
+        }
+
         $this->evaluation = $evaluation;
         $this->loadStats();
     }

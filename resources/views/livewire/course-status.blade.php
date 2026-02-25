@@ -151,24 +151,50 @@
                             </ul>
                         </li>
                         
-                        {{-- Evaluaciones de la sección --}}
-                        @if($seccion->evaluations->count() > 0)
+                        {{-- Evaluaciones de la sección (nuevo motor principal) --}}
+                        @php
+                            $sectionExamEvaluations = $seccion->examEvaluations->where('is_active', true);
+                        @endphp
+
+                        @foreach($sectionExamEvaluations as $evaluation)
+                            @if($evaluation->start_mode == 'manual' && !$evaluation->is_visible)
+                                @continue
+                            @endif
+
+                            <li class="flex mb-1 text-white opacity-50">
+                                <div>
+                                    <span class="inline-block w-4 h-4 bg-purple-500 rounded-full mr-2"></span>
+                                </div>
+                                @if(!$this->isExamEvaluationUnlocked($evaluation))
+                                    <span class="cursor-not-allowed text-gray-400" title="Debes completar el 100% del curso">
+                                        <i class="fas fa-lock mr-2"></i> {{ $evaluation->name }}
+                                    </span>
+                                @else
+                                    <a class="cursor-pointer" wire:click="showEvaluation({{ $evaluation->id }})">
+                                        <i class="fas fa-tasks mr-2"></i> {{ $evaluation->name }}
+                                    </a>
+                                @endif
+                            </li>
+                        @endforeach
+
+                        {{-- Legacy fallback --}}
+                        @if($sectionExamEvaluations->isEmpty() && $seccion->evaluations->count() > 0)
                             @foreach($seccion->evaluations as $evaluation)
                                 @if($evaluation->start_mode == 'manual' && !$evaluation->is_visible)
-                                    @continue {{-- Hide completely if manual and not visible --}}
+                                    @continue
                                 @endif
 
                                 <li class="flex mb-1 text-white opacity-50">
                                     <div>
                                         <span class="inline-block w-4 h-4 bg-purple-500 rounded-full mr-2"></span>
                                     </div>
-                                    @if(($evaluation->start_mode == 'manual' || $evaluation->start_mode == 'automatic') && $this->advance < 100)
+                                    @if(!$this->isLegacyEvaluationUnlocked($evaluation))
                                         <span class="cursor-not-allowed text-gray-400" title="Debes completar el 100% del curso">
                                             <i class="fas fa-lock mr-2"></i> {{ $evaluation->name }}
                                         </span>
                                     @else
-                                        <a class="cursor-pointer {{ $currentEvaluation && $currentEvaluation->id == $evaluation->id ? 'text-purple-300 font-bold' : '' }}" 
-                                           wire:click="showEvaluation({{ $evaluation->id }})">
+                                        <a class="cursor-pointer {{ $currentEvaluation && $currentEvaluation->id == $evaluation->id ? 'text-purple-300 font-bold' : '' }}"
+                                           wire:click="showLegacyEvaluation({{ $evaluation->id }})">
                                             <i class="fas fa-tasks mr-2"></i> {{ $evaluation->name }}
                                         </a>
                                     @endif
@@ -177,8 +203,40 @@
                         @endif
                     @endforeach
                     
-                    {{-- Final Exam --}}
-                    @if($course->evaluations->count() > 0)
+                    {{-- Final Exam (nuevo motor principal) --}}
+                    @php
+                        $finalExamEvaluations = $course->examFinalEvaluations->where('is_active', true);
+                    @endphp
+                    @if($finalExamEvaluations->count() > 0)
+                        <li class="text-gray-600 mb-4 mt-6">
+                            <span class="font-bold text-base inline-block mb-2 text-white opacity-90">Evaluación Final</span>
+                            <ul>
+                                @foreach($finalExamEvaluations as $evaluation)
+                                    @if($evaluation->start_mode == 'manual' && !$evaluation->is_visible)
+                                        @continue
+                                    @endif
+
+                                    <li class="flex mb-1 text-white opacity-50">
+                                        <div>
+                                            <span class="inline-block w-4 h-4 bg-yellow-500 rounded-full mr-2"></span>
+                                        </div>
+                                        @if(!$this->isExamEvaluationUnlocked($evaluation))
+                                            <span class="cursor-not-allowed text-gray-400" title="Debes completar el 100% del curso">
+                                                <i class="fas fa-lock mr-2"></i> {{ $evaluation->name }}
+                                            </span>
+                                        @else
+                                            <a class="cursor-pointer" wire:click="showEvaluation({{ $evaluation->id }})">
+                                                <i class="fas fa-certificate mr-2"></i> {{ $evaluation->name }}
+                                            </a>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </li>
+                    @endif
+
+                    {{-- Legacy fallback --}}
+                    @if($finalExamEvaluations->isEmpty() && $course->evaluations->count() > 0)
                         <li class="text-gray-600 mb-4 mt-6">
                             <span class="font-bold text-base inline-block mb-2 text-white opacity-90">Evaluación Final</span>
                             <ul>
@@ -191,13 +249,13 @@
                                         <div>
                                             <span class="inline-block w-4 h-4 bg-yellow-500 rounded-full mr-2"></span>
                                         </div>
-                                        @if(($evaluation->start_mode == 'manual' || $evaluation->start_mode == 'automatic') && $this->advance < 100)
+                                        @if(!$this->isLegacyEvaluationUnlocked($evaluation))
                                             <span class="cursor-not-allowed text-gray-400" title="Debes completar el 100% del curso">
                                                 <i class="fas fa-lock mr-2"></i> {{ $evaluation->name }}
                                             </span>
                                         @else
-                                            <a class="cursor-pointer {{ $currentEvaluation && $currentEvaluation->id == $evaluation->id ? 'text-yellow-300 font-bold' : '' }}" 
-                                               wire:click="showEvaluation({{ $evaluation->id }})">
+                                            <a class="cursor-pointer {{ $currentEvaluation && $currentEvaluation->id == $evaluation->id ? 'text-yellow-300 font-bold' : '' }}"
+                                               wire:click="showLegacyEvaluation({{ $evaluation->id }})">
                                                 <i class="fas fa-certificate mr-2"></i> {{ $evaluation->name }}
                                             </a>
                                         @endif
@@ -370,8 +428,10 @@
                 confirmButtonText: event.detail.confirmButtonText,
                 cancelButtonText: 'Más tarde'
             }).then((result) => {
-                if (result.isConfirmed) {
+                if (result.isConfirmed && event.detail.evaluation_id) {
                     @this.showEvaluation(event.detail.evaluation_id);
+                } else if (result.isConfirmed && event.detail.legacy_evaluation_id) {
+                    window.location.href = \"{{ url('cursos') }}/{{ $course->slug }}/evaluation/\" + event.detail.legacy_evaluation_id;
                 }
             })
         });

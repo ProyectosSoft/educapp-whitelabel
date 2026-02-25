@@ -11,6 +11,10 @@ class ExamIndex extends Component
     {
         $exams = Exam::with(['evaluations' => function ($query) {
             $query->where('is_active', true)
+                  ->where(function ($evalQuery) {
+                      $evalQuery->where('context_type', 'standalone')
+                          ->orWhereNull('context_type');
+                  })
                   ->with(['userAttempts' => function($q) {
                       $q->where('user_id', auth()->id());
                   }]);

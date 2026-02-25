@@ -23,7 +23,7 @@ class CursosCurriculum extends Component
     }
     public function render()
     {
-        return view('livewire.author.cursos-curriculum')->layout('layouts.author',['course'=>$this->course]);
+        return view('livewire.author.cursos-curriculum')->layout('layouts.instructor-tailwind');
     }
 
     public function store(){

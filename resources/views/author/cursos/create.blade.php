@@ -67,6 +67,26 @@
                     console.log( error );
                 });
 
+            // Imagen Previsualizacion
+            if (document.getElementById("file")) {
+                document.getElementById("file").addEventListener('change', cambiarImagen);
+            }
+            function cambiarImagen(event){
+                var file = event.target.files[0];
+                if (!file) return;
+
+                var reader = new FileReader();
+                reader.onload = (event) => {
+                    const picture = document.getElementById("picture");
+                    if (picture) {
+                        picture.setAttribute('src', event.target.result);
+                        picture.classList.remove('object-contain', 'p-8', 'bg-slate-100', 'opacity-90');
+                        picture.classList.add('object-cover');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+
             // Validacion Imagen
             function validarImagen(input) {
                 var dimensionesError = document.getElementById('dimensionesError');
@@ -90,6 +110,65 @@
                     reader.readAsDataURL(input.files[0]);
                 }
             }
+
+            @php
+                $allDepartamentosJs = $allDepartamentos->map(function ($d) {
+                    return [
+                        'id' => $d->id,
+                        'nombre' => $d->nombre,
+                        'empresa_id' => $d->empresa_id,
+                    ];
+                })->values()->toArray();
+            @endphp
+            const allDepartamentos = @json($allDepartamentosJs);
+
+            function renderDepartamentosByEmpresa(empresaId) {
+                const deptSelect = document.getElementById('departamento_id');
+                if (!deptSelect) return;
+
+                const currentValue = deptSelect.value;
+                const filtered = allDepartamentos.filter(d => String(d.empresa_id) === String(empresaId));
+
+                deptSelect.innerHTML = '<option value="">Todos los departamentos</option>';
+                filtered.forEach(dep => {
+                    const opt = document.createElement('option');
+                    opt.value = dep.id;
+                    opt.textContent = dep.nombre;
+                    if (String(currentValue) === String(dep.id)) opt.selected = true;
+                    deptSelect.appendChild(opt);
+                });
+            }
+
+            function setupVisibilitySection() {
+                const visibilityToggle = document.getElementById('is_public');
+                const restrictions = document.getElementById('visibility-restrictions');
+                const empresaSelect = document.getElementById('empresa_id');
+                const deptSelect = document.getElementById('departamento_id');
+                if (!visibilityToggle || !restrictions || !empresaSelect || !deptSelect) return;
+
+                const updateVisibility = () => {
+                    const isPublic = visibilityToggle.checked;
+                    restrictions.style.display = isPublic ? 'none' : 'grid';
+                    empresaSelect.disabled = isPublic;
+                    deptSelect.disabled = isPublic;
+
+                    if (isPublic) {
+                        empresaSelect.value = '';
+                        deptSelect.innerHTML = '<option value="">Todos los departamentos</option>';
+                    } else {
+                        renderDepartamentosByEmpresa(empresaSelect.value);
+                    }
+                };
+
+                empresaSelect.addEventListener('change', () => {
+                    renderDepartamentosByEmpresa(empresaSelect.value);
+                });
+
+                visibilityToggle.addEventListener('change', updateVisibility);
+                updateVisibility();
+            }
+
+            setupVisibilitySection();
         </script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>

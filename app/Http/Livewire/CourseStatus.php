@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Curso;
 use App\Models\Leccioncurso;
+use App\Models\ExamEvaluation;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CourseStatus extends Component
@@ -55,7 +56,41 @@ class CourseStatus extends Component
         $this->dispatchBrowserEvent('lesson-changed');
     }
 
-    public function showEvaluation(\App\Models\Evaluation $evaluation){
+    public function showEvaluation($evaluationId)
+    {
+        $evaluation = ExamEvaluation::where('id', $evaluationId)
+            ->where('course_id', $this->course->id)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$evaluation) {
+            return;
+        }
+
+        if (!$this->isExamEvaluationUnlocked($evaluation)) {
+            return;
+        }
+
+        return redirect()->route('exams.summary', $evaluation);
+    }
+
+    public function showLegacyEvaluation($evaluationId)
+    {
+        $evaluation = \App\Models\Evaluation::where('id', $evaluationId)
+            ->where(function ($query) {
+                $query->where('course_id', $this->course->id)
+                    ->orWhereIn('section_id', $this->course->Seccion_curso->pluck('id')->toArray());
+            })
+            ->first();
+
+        if (!$evaluation) {
+            return;
+        }
+
+        if (!$this->isLegacyEvaluationUnlocked($evaluation)) {
+            return;
+        }
+
         $this->currentEvaluation = $evaluation;
         $this->current = null;
     }
@@ -74,11 +109,11 @@ class CourseStatus extends Component
 
         // Check for Final Exam Trigger
         if ($this->getAdvanceProperty() >= 100) {
-            $finalExam = $this->course->evaluations()->first();
+            $finalExam = $this->course->examFinalEvaluations()->where('is_active', true)->first();
             
             if ($finalExam) {
                 if ($finalExam->start_mode === 'automatic') {
-                    $this->showEvaluation($finalExam);
+                    return $this->showEvaluation($finalExam->id);
                 } elseif ($finalExam->start_mode === 'manual') {
                     // Trigger SweetAlert confirmation
                     $this->dispatchBrowserEvent('swal:confirm-exam', [
@@ -86,8 +121,25 @@ class CourseStatus extends Component
                         'text' => '¿Deseas realizar la evaluación final ahora?',
                         'icon' => 'success',
                         'confirmButtonText' => 'Sí, comenzar examen',
-                        'evaluation_id' => $finalExam->id
+                        'evaluation_id' => $finalExam->id,
                     ]);
+                }
+            } else {
+                // Legacy fallback while old evaluations exist.
+                $legacyFinalExam = $this->course->evaluations()->first();
+                if ($legacyFinalExam) {
+                    if ($legacyFinalExam->start_mode === 'automatic') {
+                        $this->currentEvaluation = $legacyFinalExam;
+                        $this->current = null;
+                    } elseif ($legacyFinalExam->start_mode === 'manual') {
+                        $this->dispatchBrowserEvent('swal:confirm-exam', [
+                            'title' => '¡Felicidades! Has completado el curso',
+                            'text' => '¿Deseas realizar la evaluación final ahora?',
+                            'icon' => 'success',
+                            'confirmButtonText' => 'Sí, comenzar examen',
+                            'legacy_evaluation_id' => $legacyFinalExam->id,
+                        ]);
+                    }
                 }
             }
         }
@@ -116,15 +168,66 @@ class CourseStatus extends Component
 
     public function getAdvanceProperty() {
         $i=0;
+        $totalLessons = $this->course->lecciones->count();
+
+        if ($totalLessons === 0) {
+            return 0;
+        }
+
         foreach($this->course->lecciones as $leccion){
             if($leccion->completed){
                 $i++;
             }
         }
 
-        $advance=($i*100)/($this->course->lecciones->count());
+        $advance=($i*100)/$totalLessons;
 
         return round($advance,2) ;
+    }
+
+    public function isExamEvaluationUnlocked(ExamEvaluation $evaluation): bool
+    {
+        $mode = $evaluation->start_mode ?? 'automatic';
+        if ($mode === 'manual') {
+            return true;
+        }
+
+        if (($evaluation->context_type ?? '') === 'course_section' && $evaluation->section_id) {
+            return $this->getSectionAdvanceById((int) $evaluation->section_id) >= 100;
+        }
+
+        return $this->getAdvanceProperty() >= 100;
+    }
+
+    public function isLegacyEvaluationUnlocked($evaluation): bool
+    {
+        $mode = $evaluation->start_mode ?? 'automatic';
+        if ($mode === 'manual') {
+            return true;
+        }
+
+        if (!empty($evaluation->section_id)) {
+            return $this->getSectionAdvanceById((int) $evaluation->section_id) >= 100;
+        }
+
+        return $this->getAdvanceProperty() >= 100;
+    }
+
+    private function getSectionAdvanceById(int $sectionId): float
+    {
+        $section = $this->course->Seccion_curso->firstWhere('id', $sectionId);
+        if (!$section) {
+            return 0;
+        }
+
+        $lessons = $section->Leccioncurso;
+        $total = $lessons->count();
+        if ($total === 0) {
+            return 0;
+        }
+
+        $completed = $lessons->filter(fn ($lesson) => $lesson->completed)->count();
+        return round(($completed * 100) / $total, 2);
     }
 
     public function download(){

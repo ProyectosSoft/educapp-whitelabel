@@ -32,4 +32,9 @@ class Seccion_curso extends Model
     {
         return $this->hasMany('App\Models\Evaluation', 'section_id');
     }
+
+    public function examEvaluations()
+    {
+        return $this->hasMany('App\Models\ExamEvaluation', 'section_id');
+    }
 }
