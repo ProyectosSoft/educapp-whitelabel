@@ -27,26 +27,29 @@
     ];
 @endphp
 
-<!-- Sidebar -->
+<!-- Sidebar Premium Corporate Style -->
 <aside id="logo-sidebar"
-    class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform bg-primary-900 border-r border-primary-800 dark:bg-gray-800 dark:border-gray-700 shadow-xl"
+    class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform bg-primary-900 border-r border-primary-800 shadow-xl"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
     aria-label="Sidebar">
     
-    <div class="h-full px-3 pb-4 overflow-y-auto bg-primary-900 dark:bg-gray-800 scrollbar-hide">
-        <ul class="space-y-2 font-medium mt-4">
+    <div class="h-full px-3 pb-4 overflow-y-auto bg-primary-900 scrollbar-hide flex flex-col">
+        <ul class="space-y-2 font-medium mt-4 flex-1">
             @foreach ($links as $link)
                 <li>
                     <a href="{{ $link['route'] }}"
-                        class="flex items-center p-3 rounded-xl group transition-all duration-200 
+                        class="flex items-center p-3 rounded-r-xl rounded-l-none group transition-all duration-300 ease-in-out relative
                         {{ $link['active'] 
-                            ? 'bg-primary-800 text-secondary border-l-4 border-secondary shadow-lg shadow-primary-900/50' 
-                            : 'text-gray-300 hover:bg-primary-800 hover:text-white hover:pl-4' 
+                            ? 'bg-primary-800 text-secondary border-l-4 border-secondary shadow-md shadow-black/20 font-bold' 
+                            : 'text-gray-300 hover:bg-primary-800 hover:text-white border-l-4 border-transparent hover:border-gray-500' 
                         }}">
                         
-                        <i class="{{ $link['icon'] }} w-6 text-center text-lg {{ $link['active'] ? 'text-secondary animate-pulse' : 'text-gray-400 group-hover:text-white' }}"></i>
+                        <div class="flex items-center justify-center w-8">
+                            <i class="{{ $link['icon'] }} text-lg z-10 transition-transform duration-300 group-hover:scale-110 
+                                {{ $link['active'] ? 'text-secondary' : 'text-gray-400 group-hover:text-gray-200' }}"></i>
+                        </div>
                         
-                        <span class="ml-3">{{ $link['name'] }}</span>
+                        <span class="ml-2 text-sm tracking-wide z-10">{{ $link['name'] }}</span>
                         
                         @if($link['active'])
                             <i class="fas fa-chevron-right ml-auto text-xs text-secondary opacity-70"></i>
@@ -56,12 +59,16 @@
             @endforeach
         </ul>
         
-        <!-- Bottom Section (Optional) -->
-        <div class="absolute bottom-0 left-0 justify-center p-4 space-x-4 w-full lg:flex bg-primary-950/50 backdrop-blur-sm border-t border-primary-800">
-             <div class="flex items-center space-x-3 text-white/50 text-xs">
-                 <span>&copy; {{ date('Y') }} EducApp</span>
-                 <span class="w-1 h-1 bg-gray-500 rounded-full"></span>
-                 <span>Alumno</span>
+        <!-- Bottom Section -->
+        <div class="mt-auto border-t border-primary-800 pt-4 px-2">
+             <div class="flex flex-col items-center justify-center p-3 bg-primary-950/50 rounded-xl border border-primary-800">
+                 <div class="flex items-center space-x-2 text-gray-400 text-xs font-semibold select-none mb-1.5">
+                    <i class="fas fa-user-graduate text-secondary"></i>
+                    <span class="text-gray-300">Panel Alumno</span>
+                 </div>
+                 <div class="text-[10px] text-gray-500 text-center uppercase tracking-wider font-bold">
+                    &copy; {{ date('Y') }} Academia Effi
+                 </div>
              </div>
         </div>
     </div>
@@ -70,7 +77,7 @@
 <!-- Overlay for mobile only -->
 <div x-show="sidebarOpen" 
      @click="sidebarOpen = false" 
-     class="fixed inset-0 z-30 bg-gray-900 bg-opacity-50 sm:hidden backdrop-blur-sm transition-opacity"
+     class="fixed inset-0 z-30 bg-primary-950/50 backdrop-blur-sm sm:hidden transition-opacity"
      x-transition:enter="transition ease-out duration-300"
      x-transition:enter-start="opacity-0"
      x-transition:enter-end="opacity-100"

@@ -51,12 +51,12 @@
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
     aria-label="Sidebar">
     
-    <div class="h-full px-3 pb-4 overflow-y-auto bg-white scrollbar-hide">
+    <div class="h-full px-3 pb-4 overflow-y-auto bg-white scrollbar-hide flex flex-col">
         <div class="mb-6 px-2">
            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Instructor Panel</span>
         </div>
         
-        <ul class="space-y-2 font-medium">
+        <ul class="space-y-2 font-medium flex-1">
             @foreach ($links as $link)
                 <li>
                     <a href="{{ $link['route'] }}"
@@ -78,12 +78,16 @@
             @endforeach
         </ul>
         
-        <!-- Bottom Section (Optional) -->
-        <div class="absolute bottom-0 left-0 justify-center p-4 space-x-4 w-full lg:flex bg-white/90 backdrop-blur-sm border-t border-gray-100">
-             <div class="flex items-center space-x-3 text-gray-400 text-xs">
-                 <span>&copy; {{ date('Y') }} EducApp</span>
-                 <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-                 <span>Instructor</span>
+        <!-- Bottom Section -->
+        <div class="mt-auto pt-6 px-2 bg-white pb-2">
+             <div class="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl border border-slate-200 shadow-sm transition-all hover:bg-white hover:shadow-md">
+                 <div class="flex items-center space-x-2 text-slate-500 text-xs font-bold select-none mb-1.5">
+                    <i class="fas fa-chalkboard-teacher text-[#335A92]"></i>
+                    <span class="text-slate-700">Panel Instructor</span>
+                 </div>
+                 <div class="text-[10px] text-slate-400 text-center uppercase tracking-wider font-extrabold">
+                    &copy; {{ date('Y') }} Academia Effi
+                 </div>
              </div>
         </div>
     </div>

@@ -274,6 +274,44 @@
         </div>
     </section>
 
+    {{-- Certifications Section --}}
+    @if(isset($certifications) && $certifications->count() > 0)
+    <section class="py-24 bg-gray-50/50 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="inline-block py-1 px-3 rounded-full bg-secondary/10 text-secondary-600 text-xs font-bold uppercase tracking-widest mb-4">Acreditaciones</span>
+                <h2 class="text-4xl md:text-5xl font-bold text-primary-900 mb-6">Certificaciones Disponibles</h2>
+                <p class="text-xl text-gray-500 leading-relaxed">Valida tus conocimientos y obtén insignias oficiales al completar nuestras evaluaciones técnicas.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                @foreach ($certifications as $cert)
+                    <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-gray-100 flex flex-col items-center text-center">
+                        <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-yellow-50 to-yellow-100 flex items-center justify-center text-yellow-500 text-3xl mb-6 shadow-inner border border-yellow-200">
+                            <i class="fas fa-medal drop-shadow-sm"></i>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold text-primary-900 mb-3 leading-tight">{{ \Illuminate\Support\Str::limit($cert->name, 40) }}</h3>
+                        
+                        <div class="flex items-center gap-2 mb-4 text-xs font-bold text-gray-400">
+                            <span class="bg-gray-100 px-2 py-1 rounded">{{ $cert->categoria->name ?? 'General' }}</span>
+                            @if($cert->is_public)
+                                <span class="bg-green-50 text-green-600 px-2 py-1 rounded">Público</span>
+                            @endif
+                        </div>
+                        
+                        <div class="mt-auto w-full pt-6 border-t border-gray-50">
+                            <a href="{{ route('exams.summary', $cert) }}" class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-primary-50 text-primary-700 font-bold rounded-xl hover:bg-primary-900 hover:text-white transition-colors">
+                                Ver Detalles
+                            </a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
     {{-- Modern CTA Section --}}
     <section class="py-24 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

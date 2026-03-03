@@ -34,6 +34,7 @@ Route::prefix('mi-empresa')->name('empresas.')->group(function () {
     Route::get('cursos', [\App\Http\Controllers\Admin\EmpresaController::class, 'cursosIndex'])->name('cursos.index');
     Route::get('instructores', [\App\Http\Controllers\Admin\EmpresaController::class, 'instructoresIndex'])->name('instructores.index');
     Route::get('alumnos', [\App\Http\Controllers\Admin\EmpresaController::class, 'alumnosIndex'])->name('alumnos.index');
+    Route::get('alumnos/{alumno}', [\App\Http\Controllers\Admin\EmpresaController::class, 'alumnosShow'])->name('alumnos.show');
     Route::get('certificaciones', [\App\Http\Controllers\Admin\EmpresaController::class, 'certificacionesIndex'])->name('certificaciones.index');
 
     // Categorias Management

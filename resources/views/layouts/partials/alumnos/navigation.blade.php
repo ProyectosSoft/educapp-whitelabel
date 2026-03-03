@@ -1,23 +1,18 @@
-<nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200">
-    <div class="px-3 py-3 lg:px-5 lg:pl-3">
+<nav class="fixed top-0 z-50 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100 shadow-sm transition-all duration-300"
+    :class="sidebarOpen ? 'sm:pl-0' : ''">
+    <div class="px-4 py-3 lg:px-6">
         <div class="flex items-center justify-between">
-            <div class="flex items-center justify-start rtl:justify-end">
+            <div class="flex items-center justify-start rtl:justify-end gap-4">
                 <button x-on:click="sidebarOpen = !sidebarOpen" data-drawer-target="logo-sidebar"
                     data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button"
-                    class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg  hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
+                    class="inline-flex items-center p-2 text-sm text-gray-500 rounded-xl hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors">
                     <span class="sr-only">Open sidebar</span>
-                    <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path clip-rule="evenodd" fill-rule="evenodd"
-                            d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
-                        </path>
-                    </svg>
+                    <i class="fas fa-bars text-xl"></i>
                 </button>
-                <a href="https://educapp.net" class="flex ms-2 md:me-24">
-                    <img src="{{ asset('img/cursos/LOGO_ANIMADO_MORADO.gif') }}" class="h-8 me-3" alt="FlowBite Logo" />
-                    <span>
-                        <img src="{{ asset('img/cursos/Logo_EducApp_6_V1_Mo.png') }}" class="h-8 me-3"
-                            alt="FlowBite Logo" /></span>
+                <a href="{{ route('alumnos.dashboard') }}" class="flex items-center gap-3 group ml-2">
+                    <div class="bg-gradient-to-r from-secondary via-primary-700 to-primary-900 px-3 py-1.5 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform group-hover:scale-105">
+                        <img src="{{ asset('img/LOGO_ACADEMIA_Effi_ERP.png') }}" class="h-9 w-auto object-contain" alt="Academia Effi ERP" />
+                    </div>
                 </a>
             </div>
             <div class="flex items-center">
@@ -27,18 +22,18 @@
                             <x-slot name="trigger">
                                 @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                                     <button
-                                        class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
-                                        <img class="h-8 w-8 rounded-full object-cover"
+                                        class="flex text-sm border-2 border-white rounded-full focus:outline-none focus:border-gray-300 transition transform hover:scale-105 shadow-md shadow-gray-200 ring-1 ring-gray-100">
+                                        <img class="h-9 w-9 rounded-full object-cover"
                                             src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
                                     </button>
                                 @else
                                     <span class="inline-flex rounded-md">
                                         <button type="button"
-                                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
+                                            class="inline-flex items-center px-4 py-2 border border-gray-200 text-sm leading-4 font-bold rounded-full text-primary-900 bg-white hover:bg-gray-50 focus:outline-none focus:bg-gray-50 active:bg-gray-100 transition ease-in-out duration-150 shadow-sm">
                                             {{ Auth::user()->name }}
 
-                                            <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <svg class="ml-2 -mr-0.5 h-4 w-4 opacity-50" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                                             </svg>
@@ -49,71 +44,67 @@
 
                             <x-slot name="content">
                                 <!-- Account Management -->
-                                <div class="block px-4 py-2 text-xs text-gray-400">
-                                    <div class=" text-greenLime_400">
-                                        {{ __('Manage Account') }}
-                                    </div>
+                                <div class="block px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                    {{ __('Administrar Cuenta') }}
                                 </div>
 
-                                {{-- <x-dropdown-link href="{{ route('orders.show') }}">
-                                    Mis Ordenes
-                                </x-dropdown-link> --}}
-
                                 <x-dropdown-link href="{{ route('profile.show') }}">
-                                    <div class=" text-greenLime_400">
-                                        Perfil
+                                    <div class="flex items-center font-medium text-gray-700">
+                                        <i class="fas fa-user-circle mr-2 text-primary-500"></i> Perfil
                                     </div>
                                 </x-dropdown-link>
                                 @can('Leer cursos')
                                     <x-dropdown-link href="{{ route('author.cursos.index') }}">
-                                        Autor
+                                        <div class="flex items-center font-medium text-gray-700">
+                                            <i class="fas fa-chalkboard-teacher mr-2 text-secondary-600"></i> Autor
+                                        </div>
                                     </x-dropdown-link>
                                 @endcan
 
                                 @can('Ver Dashboard Alumno')
                                     <x-dropdown-link href="{{ route('alumnos.dashboard') }}">
-                                        <div class=" text-greenLime_400">
-                                            Mis Cursos
+                                        <div class="flex items-center font-medium text-gray-700">
+                                            <i class="fas fa-graduation-cap mr-2 text-blue-500"></i> Mis Cursos
                                         </div>
                                     </x-dropdown-link>
                                     
                                     <x-dropdown-link href="{{ route('student.evaluations.index') }}">
-                                        <div class=" text-greenLime_400">
-                                            Mis Evaluaciones
+                                        <div class="flex items-center font-medium text-gray-700">
+                                            <i class="fas fa-clipboard-check mr-2 text-primary-400"></i> Mis Evaluaciones
                                         </div>
                                     </x-dropdown-link>
                                 @endcan
 
                                 @can('Ver Dashboard Instructor')
                                     <x-dropdown-link href="{{ route('author.financiero') }}">
-                                        <div class=" text-greenLime_400">
-                                            Financiero
+                                        <div class="flex items-center font-medium text-gray-700">
+                                            <i class="fas fa-chart-line mr-2 text-green-500"></i> Financiero (Instructor)
                                         </div>
                                     </x-dropdown-link>
                                 @endcan
                                 @can('Ver Dashboard Afiliado')
                                     <x-dropdown-link href="{{ route('afiliados.dashboard') }}">
-                                        <div class=" text-greenLime_400">
-                                            Mis Cursos
+                                        <div class="flex items-center font-medium text-gray-700">
+                                            <i class="fas fa-handshake mr-2 text-primary-600"></i> Mis Cursos (Afiliado)
                                         </div>
                                     </x-dropdown-link>
                                 @endcan
 
                                 @can('Ver Dashboard Admin')
                                     <x-dropdown-link href="{{ route('admin.financiero') }}">
-                                        <div class=" text-greenLime_400">
-                                            Financiero
+                                        <div class="flex items-center font-medium text-gray-700">
+                                            <i class="fas fa-chart-pie mr-2 text-yellow-500"></i> Financiero (Admin)
                                         </div>
                                     </x-dropdown-link>
                                 @endcan
 
                                 @can('Ver dashboard')
                                     <x-dropdown-link href="{{ route('admin.home') }}">
-                                        Administrador
+                                        <div class="flex items-center font-medium text-gray-700">
+                                            <i class="fas fa-shield-alt mr-2 text-red-500"></i> Administrador
+                                        </div>
                                     </x-dropdown-link>
                                 @endcan
-
-
 
                                 @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
                                     <x-dropdown-link href="{{ route('api-tokens.index') }}">
@@ -121,15 +112,15 @@
                                     </x-dropdown-link>
                                 @endif
 
-                                <div class="border-t border-gray-200"></div>
+                                <div class="border-t border-gray-100 my-1"></div>
 
                                 <!-- Authentication -->
                                 <form method="POST" action="{{ route('logout') }}" x-data>
                                     @csrf
 
                                     <x-dropdown-link href="{{ route('logout') }}" @click.prevent="$root.submit();">
-                                        <div class=" text-greenLime_400">
-                                            {{ __('Log Out') }}
+                                        <div class="flex items-center text-red-600 font-bold">
+                                            <i class="fas fa-sign-out-alt mr-2"></i> {{ __('Log Out') }}
                                         </div>
                                     </x-dropdown-link>
                                 </form>

@@ -22,7 +22,7 @@
     </div>
 
     <!-- Links -->
-    <div class="space-y-8">
+    <div class="space-y-8 flex-1">
         <!-- Pages group -->
         <div>
             <h3 class="text-xs uppercase text-gray-500 font-bold pl-3 mb-4">
@@ -74,8 +74,20 @@
                         </div>
                     </a>
                 </li>
-
             </ul>
         </div>
+    </div>
+
+    <!-- Bottom Section -->
+    <div class="mt-auto border-t border-slate-100 pt-4 px-2">
+         <div class="flex flex-col items-center justify-center p-3 bg-slate-50 rounded-xl border border-slate-200 shadow-sm">
+             <div class="flex items-center space-x-2 text-slate-500 text-xs font-semibold select-none mb-1.5">
+                <i class="fas fa-chalkboard-teacher text-[#335A92]"></i>
+                <span class="text-slate-700">Panel Instructor</span>
+             </div>
+             <div class="text-[10px] text-slate-400 text-center uppercase tracking-wider font-bold">
+                &copy; {{ date('Y') }} Academia Effi
+             </div>
+         </div>
     </div>
 </div>

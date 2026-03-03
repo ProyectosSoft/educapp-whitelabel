@@ -131,35 +131,127 @@
 
 
 
+    <style>
+        /* Force SweetAlert2 Light Theme & Corporate Styles */
+        div:where(.swal2-container) div:where(.swal2-popup) {
+            background: #ffffff !important;
+            color: #1f2937 !important;
+            border-radius: 1rem !important;
+        }
+        div:where(.swal2-container) button.swal2-styled.swal2-confirm {
+            background-color: #335A92 !important;
+            border-radius: 0.75rem !important;
+            font-weight: bold !important;
+        }
+        div:where(.swal2-container) button.swal2-styled.swal2-cancel {
+            background-color: #f3f4f6 !important;
+            color: #374151 !important;
+            border-radius: 0.75rem !important;
+            font-weight: bold !important;
+        }
+        div:where(.swal2-icon) {
+            border-color: #e5e7eb !important;
+        }
+    </style>
     @livewireStyles
 </head>
 
-<body class="font-sans antialiased" x-data="{
+<body class="font-sans antialiased bg-gray-50" x-data="{
     sidebarOpen: false,
 }" :class="{
     'overflow-hidden': sidebarOpen,
 }">
 
-    <div class="fixed inset-0 bg-gray-900  bg-opacity-50 z-20 sm:hidden" style="display: none;" x-show="sidebarOpen"
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 sm:hidden" style="display: none;" x-show="sidebarOpen"
         x-on:click="sidebarOpen=false">
-
     </div>
 
     @include('layouts.partials.alumnos.navigation')
 
     @include('layouts.partials.alumnos.sidebar')
 
-
-    {{-- <div class="p-4 sm:ml-64">
-        <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
-            {{ $slot }}
-        </div>
-    </div> --}}
-    <div class="p-6 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-24">
+    <main class="p-4 sm:p-6 lg:p-8 mt-20 transition-all duration-300 ease-in-out" :class="sidebarOpen ? 'sm:ml-64' : 'sm:ml-64'">
         {{ $slot }}
-    </div>
+    </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @livewireScripts
+    @stack('js')
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Apply Corporate Colors to Global Alerts
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                background: '#fff',
+                color: '#335A92'
+            });
+
+            @if (session('swal'))
+                Swal.fire({!! json_encode(session('swal')) !!});
+            @endif
+
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: {!! json_encode(session('success')) !!},
+                    confirmButtonColor: '#335A92', // Corporate Blue
+                    confirmButtonText: 'Aceptar',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'px-6 py-2.5 rounded-xl'
+                    }
+                });
+            @endif
+
+            @if (session('info'))
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Información',
+                    text: {!! json_encode(session('info')) !!},
+                    confirmButtonColor: '#335A92', // Corporate Blue
+                    confirmButtonText: 'Aceptar',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'px-6 py-2.5 rounded-xl'
+                    }
+                });
+            @endif
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Error!',
+                    text: {!! json_encode(session('error')) !!},
+                    confirmButtonColor: '#FC0B29', // Corporate Danger
+                    confirmButtonText: 'Entendido',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'px-6 py-2.5 rounded-xl'
+                    }
+                });
+            @endif
+            
+            @if ($errors->any())
+                 Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención',
+                    html: '<ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>',
+                    confirmButtonColor: '#FC0B29', // Corporate Danger
+                    confirmButtonText: 'Revisar',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'px-6 py-2.5 rounded-xl'
+                    }
+                });
+            @endif
+        });
+    </script>
 </body>
 
 </html>

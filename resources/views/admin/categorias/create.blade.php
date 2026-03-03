@@ -73,22 +73,69 @@
 
                     {{-- Right Column (Image) --}}
                     <div>
-                        <div x-data="{ fileName: '' }" class="bg-gray-50 p-6 rounded-2xl border border-gray-100 h-full flex flex-col justify-center">
+                        <div x-data="{ 
+                             fileName: '', 
+                             imageUrl: '',
+                             validateImage(e) {
+                                 const file = e.target.files[0];
+                                 const dimensionesError = document.getElementById('dimensionesError');
+                                 const errorText = dimensionesError.querySelector('span');
+
+                                 if(!file) {
+                                     this.fileName = '';
+                                     this.imageUrl = '';
+                                     dimensionesError.classList.add('hidden');
+                                     return;
+                                 }
+
+                                 const maxAncho = 640; 
+                                 const maxAlto = 480;
+                                 
+                                 const reader = new FileReader();
+                                 reader.onload = (e2) => {
+                                     const img = new Image();
+                                     img.src = e2.target.result;
+                                     img.onload = () => {
+                                         if(img.width !== maxAncho || img.height !== maxAlto) {
+                                             errorText.innerText = 'La imagen debe ser de ' + maxAncho + 'x' + maxAlto + 'px.';
+                                             dimensionesError.classList.remove('hidden');
+                                             e.target.value = '';
+                                             this.fileName = '';
+                                             this.imageUrl = '';
+                                         } else {
+                                             dimensionesError.classList.add('hidden');
+                                             errorText.innerText = '';
+                                             this.fileName = file.name;
+                                             this.imageUrl = img.src;
+                                         }
+                                     };
+                                 };
+                                 reader.readAsDataURL(file);
+                             }
+                        }" class="bg-gray-50 p-6 rounded-2xl border border-gray-100 h-full flex flex-col justify-center">
                             {!! Form::label('imagen', 'Imagen de Portada', ['class' => 'block font-bold text-sm text-[#335A92] mb-4 text-center']) !!}
                             
                             <div class="flex items-center justify-center w-full">
                                 <label for="imagen" class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-2xl cursor-pointer hover:bg-white hover:border-[#335A92] hover:shadow-md transition-all group relative overflow-hidden">
                                     
                                     {{-- Upload UI --}}
-                                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4 relative z-10">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4 relative z-10" x-show="!imageUrl">
                                         <div class="bg-white p-4 rounded-full shadow-sm mb-3 group-hover:scale-110 transition-transform">
                                             <i class="fas fa-cloud-upload-alt text-3xl text-[#335A92] group-hover:text-[#ECBD2D] transition-colors"></i>
                                         </div>
-                                        <p class="mb-1 text-sm text-gray-500 group-hover:text-[#335A92] transition-colors" x-show="!fileName">
+                                        <p class="mb-1 text-sm text-gray-500 group-hover:text-[#335A92] transition-colors">
                                             <span class="font-bold">Haz clic para subir</span> o arrastra
                                         </p>
-                                        <p class="mb-1 text-sm text-[#335A92] font-bold break-all px-2" x-show="fileName" x-text="fileName"></p>
                                         <p class="text-xs text-gray-400 group-hover:text-gray-500">Recomendado: 640x480px (PNG, JPG)</p>
+                                    </div>
+
+                                    {{-- Preview UI --}}
+                                    <div class="absolute inset-0 w-full h-full p-2" x-show="imageUrl" style="display: none;">
+                                        <img :src="imageUrl" class="w-full h-full object-cover rounded-xl shadow-sm border border-gray-200">
+                                        <div class="absolute inset-0 bg-primary-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center rounded-xl m-2 backdrop-blur-sm">
+                                            <i class="fas fa-exchange-alt text-white text-3xl mb-2 drop-shadow-md"></i>
+                                            <span class="text-white font-bold text-sm drop-shadow-md">Cambiar Imagen</span>
+                                        </div>
                                     </div>
 
                                     {{-- File Input --}}
@@ -96,7 +143,7 @@
                                         'id' => 'imagen', 
                                         'class' => 'hidden', 
                                         'accept' => 'image/*', 
-                                        'onchange' => 'validarImagen(this); if(this.files.length > 0) { this.closest("[x-data]").__x.$data.fileName = this.files[0].name; }'
+                                        'x-on:change' => 'validateImage($event)'
                                     ]) !!}
                                 </label>
                             </div>
@@ -148,34 +195,7 @@
                 textArea.addEventListener('input', updateCounter);
             }
 
-            // Image validation
-            function validarImagen(input) {
-                const dimensionesError = document.getElementById('dimensionesError');
-                const errorText = dimensionesError.querySelector('span');
-                const maxAncho = 640; 
-                const maxAlto = 480;
 
-                if (input.files && input.files[0]) {
-                    const reader = new FileReader();
-
-                    reader.onload = function (e) {
-                        const img = new Image();
-                        img.src = e.target.result;
-
-                        img.onload = function () {
-                            if (img.width !== maxAncho || img.height !== maxAlto) {
-                                errorText.innerText = 'La imagen debe ser de ' + maxAncho + 'x' + maxAlto + 'px.';
-                                dimensionesError.classList.remove('hidden');
-                                input.value = ''; // Clear file input
-                            } else {
-                                dimensionesError.classList.add('hidden');
-                                errorText.innerText = '';
-                            }
-                        };
-                    };
-                    reader.readAsDataURL(input.files[0]);
-                }
-            }
         </script>
     @endpush
 </x-admin-layout>

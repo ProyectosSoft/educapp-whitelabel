@@ -25,9 +25,9 @@ class HomeController extends Controller
         $userEmpresaId = null;
         $userDeptoId = null;
 
-        if ($user && $user->departamento) {
+        if ($user) {
             $userDeptoId = $user->departamento_id;
-            $userEmpresaId = $user->departamento->empresa_id;
+            $userEmpresaId = $user->empresa_id;
         }
 
         // 2. Query Builder para Cursos

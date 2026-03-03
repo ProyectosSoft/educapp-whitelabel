@@ -258,12 +258,37 @@ class EmpresaController extends Controller
         return view('admin.empresas.alumnos-index', compact('empresa', 'alumnos'));
     }
 
+    public function alumnosShow(\App\Models\User $alumno)
+    {
+        $user = auth()->user();
+        $empresa = Empresa::findOrFail($user->empresa_id);
+        $this->authorize('update', $empresa);
+        
+        if ($alumno->empresa_id !== $empresa->id) {
+            abort(403, 'No tienes permiso para ver este alumno.');
+        }
+
+        // Cargar los cursos asignados con progreso
+        $cursos = $alumno->cursos_asignado()->with('Categoria')->get();
+
+        return view('admin.empresas.alumnos-show', compact('empresa', 'alumno', 'cursos'));
+    }
+
     public function certificacionesIndex()
     {
         $user = auth()->user();
         $empresa = Empresa::findOrFail($user->empresa_id);
         $this->authorize('update', $empresa);
-        return view('admin.empresas.certificaciones-index', compact('empresa'));
+        
+        $certificaciones = \App\Models\ExamUserAttempt::where('is_approved', 1)
+            ->whereHas('user', function($q) use ($empresa) {
+                $q->where('empresa_id', $empresa->id);
+            })
+            ->with(['user', 'evaluation.exam'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        return view('admin.empresas.certificaciones-index', compact('empresa', 'certificaciones'));
     }
 
     // Categorias Management

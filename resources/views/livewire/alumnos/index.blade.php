@@ -1,61 +1,86 @@
 <div>
-    {{-- Hero Section --}}
-    <div class="relative bg-primary-900 rounded-3xl overflow-hidden shadow-2xl mb-8">
-        {{-- Decorative Blur --}}
-        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-secondary-400 opacity-20 filter blur-3xl"></div>
+    {{-- Hero Section Premium Corporativa --}}
+    <div class="bg-white rounded-[2rem] shadow-lg shadow-gray-200/50 ring-1 ring-gray-100 p-8 md:p-12 relative overflow-hidden group mb-8">
+        {{-- Abstract Corporate Decoration --}}
+        <div class="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-primary-50 to-primary-100/50 rounded-full blur-3xl transform translate-x-1/3 -translate-y-1/3 pointer-events-none transition-transform duration-700 group-hover:scale-110"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary-50/50 rounded-full blur-3xl transform -translate-x-1/3 translate-y-1/3 pointer-events-none transition-transform duration-700 group-hover:scale-105"></div>
         
-        <div class="relative px-8 py-10 flex flex-col md:flex-row items-center justify-between z-10">
-            <div class="flex items-center mb-6 md:mb-0">
-                <img class="h-20 w-20 rounded-full border-2 border-secondary shadow-lg object-cover" src="{{ Auth::user()->profile_photo_url }}"
-                    alt="{{ Auth::user()->name }}" />
-                <div class="ml-6">
-                    <p class="text-secondary text-xs font-bold uppercase tracking-wider mb-1">Panel de Alumno</p>
-                    <h1 class="text-3xl font-bold text-white leading-tight">Hola, {{ Auth::user()->name }}</h1>
-                    <form action="{{ route('logout') }}" method="POST" class="mt-2">
-                        @csrf
-                        <button type="submit" class="text-sm text-gray-400 hover:text-white transition flex items-center group">
-                            <i class="fas fa-sign-out-alt mr-2 group-hover:text-red-400 transition-colors"></i> Cerrar sesión
-                        </button>
-                    </form>
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="relative flex-shrink-0">
+                    <div class="absolute inset-0 bg-primary-900 rounded-full blur-md opacity-20 transform translate-y-2"></div>
+                    <img class="h-24 w-24 rounded-full border-4 border-white shadow-sm relative z-10 object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
+                    <div class="absolute -bottom-1 -right-1 bg-accent w-8 h-8 rounded-full border-2 border-white flex items-center justify-center shadow-md z-20">
+                        <i class="fas fa-check text-primary-900 text-xs"></i>
+                    </div>
+                </div>
+                
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-primary-900 mb-2 tracking-tight">
+                        Hola, <span class="text-secondary">{{ Auth::user()->name }}</span>
+                    </h1>
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-2">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-50 text-primary-800 text-xs font-bold ring-1 ring-primary-100 shadow-sm">
+                            <i class="fas fa-user-graduate text-secondary"></i> Panel de Alumno
+                        </span>
+                        
+                        <form action="{{ route('logout') }}" method="POST" class="inline-block">
+                            @csrf
+                            <button type="submit" class="text-xs font-bold text-red-500 hover:text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ring-1 ring-transparent hover:ring-red-100">
+                                <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
             
-            {{-- Quick Stats --}}
-            <div class="flex gap-4">
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center border border-white/10 min-w-[100px]">
-                    <span class="block text-2xl font-bold text-white">{{ $NumCursos }}</span>
-                    <span class="text-[10px] text-gray-300 uppercase tracking-wider font-semibold">Mis Cursos</span>
+            {{-- Quick Stats Modernos --}}
+            <div class="flex gap-4 md:gap-5 justify-center mt-4 md:mt-0">
+                <div class="flex flex-col items-center bg-white rounded-2xl p-4 min-w-[100px] shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-lg hover:shadow-primary-900/10 hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-xl bg-primary-50 text-primary-800 flex items-center justify-center mb-2 group-hover:bg-primary-900 group-hover:text-white transition-colors duration-300">
+                        <i class="fas fa-book-open text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-black text-primary-900">{{ $NumCursos }}</span>
+                    <span class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Cursos</span>
                 </div>
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center border border-white/10 min-w-[100px]">
-                    <span class="block text-2xl font-bold text-secondary">{{ $NumFavoritos }}</span>
-                    <span class="text-[10px] text-gray-300 uppercase tracking-wider font-semibold">Favoritos</span>
+                
+                <div class="flex flex-col items-center bg-white rounded-2xl p-4 min-w-[100px] shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-lg hover:shadow-secondary/10 hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-xl bg-secondary-50 text-secondary-700 flex items-center justify-center mb-2 group-hover:bg-secondary group-hover:text-white transition-colors duration-300">
+                        <i class="fas fa-heart text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-black text-secondary">{{ $NumFavoritos }}</span>
+                    <span class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Favoritos</span>
                 </div>
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center border border-white/10 min-w-[100px]">
-                    <span class="block text-2xl font-bold text-white">{{ $NumCart }}</span>
-                    <span class="text-[10px] text-gray-300 uppercase tracking-wider font-semibold">Carrito</span>
+                
+                <div class="flex flex-col items-center bg-white rounded-2xl p-4 min-w-[100px] shadow-sm ring-1 ring-gray-100 transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-xl bg-accent/10 text-accent-700 flex items-center justify-center mb-2 group-hover:bg-accent group-hover:text-primary-900 transition-colors duration-300">
+                        <i class="fas fa-shopping-cart text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-black text-gray-800">{{ $NumCart }}</span>
+                    <span class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Carrito</span>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Tabs Navigation --}}
-    <div class="mb-8 flex space-x-1 border-b border-gray-200 dark:border-gray-700">
+    {{-- Tabs Navigation Corporativos Limpios --}}
+    <div class="mb-8 flex flex-wrap gap-2 p-1.5 bg-white ring-1 ring-gray-100 rounded-2xl shadow-sm w-full max-w-fit mx-auto md:mx-0">
         <button wire:click="toggleMostrarTabla" 
-                class="pb-4 px-4 font-bold text-sm uppercase tracking-wide border-b-2 transition-all duration-300 focus:outline-none flex items-center
-                {{ $mostrarTabla ? 'border-primary-600 text-primary-600 dark:text-primary-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <i class="fas fa-book-open mr-2"></i> Mis Cursos
+                class="px-5 py-2.5 font-bold text-sm tracking-wide rounded-xl transition-all duration-300 focus:outline-none flex items-center 
+                {{ $mostrarTabla ? 'bg-primary-900 text-white shadow-md shadow-primary-900/20' : 'bg-transparent text-gray-500 hover:bg-primary-50 hover:text-primary-900' }}">
+            <i class="fas fa-book-open mr-2 {{ $mostrarTabla ? 'text-accent' : '' }}"></i> Mis Cursos
         </button>
 
         <button wire:click="toggleMostrarTablaFav" 
-                class="pb-4 px-4 font-bold text-sm uppercase tracking-wide border-b-2 transition-all duration-300 focus:outline-none flex items-center
-                {{ $mostrarTablaFav ? 'border-secondary text-secondary-600 dark:text-secondary-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <i class="fas fa-heart mr-2"></i> Favoritos
+                class="px-5 py-2.5 font-bold text-sm tracking-wide rounded-xl transition-all duration-300 focus:outline-none flex items-center 
+                {{ $mostrarTablaFav ? 'bg-secondary text-white shadow-md shadow-secondary/20' : 'bg-transparent text-gray-500 hover:bg-secondary-50 hover:text-secondary' }}">
+            <i class="fas fa-heart mr-2 {{ $mostrarTablaFav ? 'text-white' : '' }}"></i> Favoritos
         </button>
 
         <button wire:click="toggleMostrarTablaCar" 
-                class="pb-4 px-4 font-bold text-sm uppercase tracking-wide border-b-2 transition-all duration-300 focus:outline-none flex items-center
-                {{ $mostrarTablaCar ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300' }}">
-            <i class="fas fa-shopping-cart mr-2"></i> Carrito
+                class="px-5 py-2.5 font-bold text-sm tracking-wide rounded-xl transition-all duration-300 focus:outline-none flex items-center 
+                {{ $mostrarTablaCar ? 'bg-accent text-primary-950 shadow-md shadow-accent/20' : 'bg-transparent text-gray-500 hover:accent-50/50 hover:text-accent-700' }}">
+            <i class="fas fa-shopping-cart mr-2 {{ $mostrarTablaCar ? 'text-primary-950' : '' }}"></i> Carrito
         </button>
     </div>
 
@@ -64,31 +89,38 @@
     {{-- Mis Cursos --}}
     @if ($mostrarTabla)
         @if(count($MisCursos) > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 @foreach ($MisCursos as $curso)
-                    <article class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+                    <article class="bg-white rounded-[2rem] shadow-sm ring-1 ring-gray-100 overflow-hidden group hover:shadow-xl hover:shadow-primary-900/10 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative">
                         <div class="relative overflow-hidden">
-                            <img class="h-48 w-full object-cover transform group-hover:scale-110 transition duration-500" 
+                            <img class="h-48 w-full object-cover transform group-hover:scale-105 transition duration-700" 
                                  src="{{ Storage::url($curso->image->url) }}" 
                                  alt="{{ $curso->nombre }}">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-primary-900/60 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
                             
-                            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-xs font-bold text-gray-800 shadow-sm flex items-center">
-                                <i class="fas fa-star text-yellow-400 mr-1"></i> {{ $curso->rating }}
+                            {{-- Color Accent Bar --}}
+                            <div class="absolute bottom-0 left-0 w-full h-1.5 bg-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            
+                            <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-bold text-primary-900 shadow-sm flex items-center ring-1 ring-gray-100">
+                                <i class="fas fa-star text-accent mr-1.5"></i> {{ $curso->rating }}
                             </div>
                         </div>
                         
-                        <div class="p-6 flex-1 flex flex-col">
-                            <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 leading-tight group-hover:text-primary-600 transition-colors">
+                        <div class="p-6 md:p-8 flex-1 flex flex-col z-10 bg-white">
+                            <h2 class="text-xl font-extrabold text-primary-900 mb-3 leading-tight group-hover:text-secondary transition-colors duration-300">
                                 {{ $curso->nombre }}
                             </h2>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-4 flex items-center uppercase tracking-wide font-semibold">
-                                <i class="fas fa-chalkboard-teacher mr-2 text-primary-400"></i> {{ $curso->teacher->name }}
+                            <p class="text-sm text-gray-500 mb-6 flex items-center font-medium">
+                                <span class="w-7 h-7 rounded-full bg-primary-50 text-secondary flex items-center justify-center mr-2.5">
+                                    <i class="fas fa-chalkboard-teacher text-xs"></i>
+                                </span>
+                                {{ $curso->teacher->name }}
                             </p>
                             
-                            <div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700">
-                                <a href="{{ route('cursos.show', $curso) }}" class="block w-full py-3 bg-primary-600 hover:bg-primary-700 text-white text-center font-bold rounded-xl transition duration-200 shadow-lg shadow-primary-900/20 transform hover:scale-[1.02]">
-                                    Continuar <i class="fas fa-play-circle ml-2"></i>
+                            <div class="mt-auto pt-5 border-t border-gray-100">
+                                <a href="{{ route('cursos.show', $curso) }}" class="flex justify-between items-center w-full py-3.5 px-5 bg-primary-50 hover:bg-primary-900 text-primary-900 hover:text-white font-bold rounded-xl transition-all duration-300 group/btn shadow-sm">
+                                    <span>Continuar</span>
+                                    <i class="fas fa-arrow-right transform group-hover/btn:translate-x-1 transition-transform"></i>
                                 </a>
                             </div>
                         </div>
@@ -96,15 +128,18 @@
                 @endforeach
             </div>
         @else
-             <div class="bg-gray-50 dark:bg-gray-800 rounded-3xl p-12 text-center border-2 border-dashed border-gray-200 dark:border-gray-700">
-                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-book-open text-gray-400 text-2xl"></i>
+             <div class="bg-white rounded-[2rem] p-12 md:p-16 text-center ring-1 ring-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-primary-50/50 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+                <div class="relative z-10 max-w-md mx-auto">
+                    <div class="w-20 h-20 bg-primary-50 text-primary-900 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm ring-1 ring-primary-100 transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                        <i class="fas fa-book-open text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-primary-900 mb-3 tracking-tight">Aún no tienes cursos</h3>
+                    <p class="text-gray-500 mb-8 font-medium">Explora nuestro catálogo completo y comienza a aprender una nueva habilidad hoy mismo.</p>
+                    <a href="{{ route('cursos.index') }}" class="inline-flex items-center justify-center px-8 py-3.5 bg-accent text-primary-950 font-extrabold rounded-xl hover:bg-yellow-400 transition-all shadow-md shadow-accent/20 transform hover:-translate-y-0.5 w-full sm:w-auto">
+                        <i class="fas fa-search mr-2"></i> Explorar Catálogo
+                    </a>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Aún no tienes cursos</h3>
-                <p class="text-gray-500 dark:text-gray-400 mt-2 mb-6">Explora nuestro catálogo y comienza a aprender hoy mismo.</p>
-                <a href="{{ route('cursos.index') }}" class="inline-flex items-center px-6 py-3 bg-secondary text-primary-900 font-bold rounded-xl hover:bg-secondary-400 transition shadow-lg shadow-secondary/20">
-                    <i class="fas fa-search mr-2"></i> Explorar Cursos
-                </a>
             </div>
         @endif
     @endif
@@ -112,30 +147,40 @@
     {{-- Favoritos --}}
     @if($mostrarTablaFav)
         @if(count($cursosEnWishlist) > 0)
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             @foreach ($cursosEnWishlist as $curso)
-                <article class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+                <article class="bg-white rounded-[2rem] shadow-sm ring-1 ring-gray-100 overflow-hidden group hover:shadow-xl hover:shadow-secondary/10 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative">
                     <div class="relative overflow-hidden">
-                        <img class="h-48 w-full object-cover transform group-hover:scale-110 transition duration-500" 
+                        <img class="h-48 w-full object-cover transform group-hover:scale-105 transition duration-700" 
                              src="{{ Storage::url($curso->image->url) }}" 
                              alt="{{ $curso->nombre }}">
-                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-xs font-bold text-gray-800 shadow-sm flex items-center">
-                            <i class="fas fa-heart text-red-500 mr-1"></i> Favorito
+                        <div class="absolute inset-0 bg-gradient-to-t from-secondary-900/60 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
+
+                        {{-- Color Accent Bar --}}
+                        <div class="absolute bottom-0 left-0 w-full h-1.5 bg-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                        <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-bold text-secondary shadow-sm flex items-center ring-1 ring-gray-100">
+                            <i class="fas fa-heart text-secondary mr-1.5"></i> Favorito
                         </div>
                     </div>
                     
-                    <div class="p-6 flex-1 flex flex-col">
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 leading-tight group-hover:text-secondary transition-colors">
+                    <div class="p-6 md:p-8 flex-1 flex flex-col z-10 bg-white">
+                        <h2 class="text-xl font-extrabold text-primary-900 mb-3 leading-tight group-hover:text-secondary transition-colors duration-300">
                             {{ $curso->nombre }}
                         </h2>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4 flex items-center uppercase tracking-wide font-semibold">
-                            <i class="fas fa-chalkboard-teacher mr-2 text-secondary"></i> {{ $curso->teacher->name }}
+                        <p class="text-sm text-gray-500 mb-6 flex items-center font-medium">
+                            <span class="w-7 h-7 rounded-full bg-secondary-50 text-secondary flex items-center justify-center mr-2.5">
+                                <i class="fas fa-chalkboard-teacher text-xs"></i>
+                            </span>
+                            {{ $curso->teacher->name }}
                         </p>
                         
-                        <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100 dark:border-gray-700">
-                             <span class="text-xs font-bold text-gray-500 dark:text-gray-400"><i class="fas fa-users mr-1"></i> {{ $curso->students_count }} alumnos</span>
-                            <a href="{{ route('cursos.show', $curso) }}" class="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-white rounded-lg text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition">
-                                Ver Detalles
+                        <div class="flex items-center justify-between mt-auto pt-5 border-t border-gray-100">
+                            <span class="text-xs font-bold text-gray-500 flex items-center bg-gray-50 ring-1 ring-gray-100 px-3 py-1.5 rounded-lg">
+                                <i class="fas fa-users mr-1.5 text-secondary"></i> {{ $curso->students_count }} res.
+                            </span>
+                            <a href="{{ route('cursos.show', $curso) }}" class="inline-flex items-center px-4 py-2 bg-secondary text-white rounded-lg font-bold hover:bg-secondary-600 transition-colors duration-300 shadow-sm shadow-secondary/20 text-sm">
+                                Detalles
                             </a>
                         </div>
                     </div>
@@ -143,79 +188,97 @@
             @endforeach
         </div>
         @else
-             <div class="bg-gray-50 dark:bg-gray-800 rounded-3xl p-12 text-center border-2 border-dashed border-gray-200 dark:border-gray-700">
-                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-heart-broken text-gray-400 text-2xl"></i>
+             <div class="bg-white rounded-[2rem] p-12 md:p-16 text-center ring-1 ring-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-secondary-50/50 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+                <div class="relative z-10 max-w-md mx-auto">
+                    <div class="w-20 h-20 bg-secondary-50 text-secondary-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm ring-1 ring-secondary-100 transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                        <i class="fas fa-heart-broken text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-primary-900 mb-3 tracking-tight">Lista vacía</h3>
+                    <p class="text-gray-500 mb-2 font-medium">Guarda los cursos que te interesen y los verás aquí para considerarlos después.</p>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Tu lista de deseos está vacía</h3>
-                <p class="text-gray-500 dark:text-gray-400 mt-2">Guarda los cursos que te interesen para después.</p>
             </div>
         @endif
     @endif
 
     {{-- Carrito --}}
     @if ($mostrarTablaCar)
-        <section class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-700/50">
-                <h2 class="text-lg font-bold text-gray-800 dark:text-white">Mi Carrito de Compras</h2>
+        <section class="bg-white rounded-[2rem] shadow-lg shadow-gray-200/50 ring-1 ring-gray-100 overflow-hidden relative">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+            
+            <div class="p-6 md:p-8 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 relative z-10">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-accent/10 text-accent-600 rounded-xl flex items-center justify-center mr-4 shadow-sm ring-1 ring-accent/20">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-primary-900 tracking-tight">Mi Carrito</h2>
+                </div>
+                
                 @if (Cart::count())
-                 <a href="javascript:void(0)" wire:click="destroy" class="text-xs font-bold text-red-500 hover:text-red-700 uppercase tracking-wide transition flex items-center bg-red-50 dark:bg-red-900/20 px-3 py-1.5 rounded-lg border border-red-100 dark:border-red-800/30">
+                 <a href="javascript:void(0)" wire:click="destroy" class="text-xs font-bold text-red-500 hover:text-white uppercase tracking-wide transition flex items-center bg-white hover:bg-red-500 px-4 py-2 rounded-lg ring-1 ring-red-200 shadow-sm">
                     <i class="fas fa-trash-alt mr-2"></i> Vaciar
                 </a>
                 @endif
             </div>
 
             @if (Cart::count())
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
-                        <thead class="bg-gray-50 dark:bg-gray-700 text-xs uppercase font-bold text-gray-700 dark:text-gray-300">
+                <div class="overflow-x-auto relative z-10">
+                    <table class="w-full text-left text-sm text-gray-700">
+                        <thead class="bg-primary-50 text-xs uppercase font-extrabold text-primary-900 tracking-wider">
                             <tr>
                                 <th class="px-6 py-4">Curso</th>
                                 <th class="px-6 py-4 text-center">Cant.</th>
-                                <th class="px-6 py-4 text-center">Precio</th>
-                                <th class="px-6 py-4 text-center">Subtotal</th>
+                                <th class="px-6 py-4 text-right">Precio</th>
+                                <th class="px-6 py-4 text-right">Subtotal</th>
                                 <th class="px-6 py-4 text-center">Acción</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        <tbody class="divide-y divide-gray-100">
                             @foreach ( Cart::content() as $item)
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition duration-150">
-                                    <td class="px-6 py-4 font-bold text-gray-900 dark:text-white">{{$item->name}}</td>
-                                    <td class="px-6 py-4 text-center">{{$item->qty}}</td>
-                                    <td class="px-6 py-4 text-center text-gray-600 dark:text-gray-300">$ {{number_format($item->price,0,",",".")}}</td>
-                                    <td class="px-6 py-4 text-center font-bold text-gray-900 dark:text-white">$ {{number_format($item->price * $item->qty,0,",",".")}}</td>
-                                    <td class="px-6 py-4 text-center">
-                                        <button wire:click="delete('{{$item->rowId}}')" class="text-gray-400 hover:text-red-500 transition focus:outline-none transform hover:scale-110">
-                                            <i class="fas fa-times-circle text-lg"></i>
+                                <tr class="hover:bg-gray-50 bg-white transition duration-300">
+                                    <td class="px-6 py-5 font-bold text-primary-900 text-sm flex items-center gap-3">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-accent"></div>
+                                        {{$item->name}}
+                                    </td>
+                                    <td class="px-6 py-5 text-center font-semibold text-gray-600">{{$item->qty}}</td>
+                                    <td class="px-6 py-5 text-right text-gray-500 font-medium">$ {{number_format($item->price,0,",",".")}}</td>
+                                    <td class="px-6 py-5 text-right font-extrabold text-primary-900">$ {{number_format($item->price * $item->qty,0,",",".")}}</td>
+                                    <td class="px-6 py-5 text-center">
+                                        <button wire:click="delete('{{$item->rowId}}')" class="w-8 h-8 rounded-lg bg-white text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all focus:outline-none ring-1 ring-gray-200">
+                                            <i class="fas fa-times"></i>
                                         </button>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
-                        <tfoot class="bg-gray-50 dark:bg-gray-700/50 border-t border-gray-100 dark:border-gray-700">
+                        <tfoot class="bg-gray-50/50">
                              <tr>
-                                <td colspan="3" class="px-6 py-4 text-right font-bold text-gray-600 dark:text-gray-300 uppercase text-xs tracking-wider">Total a Pagar:</td>
-                                <td class="px-6 py-4 text-center font-bold text-xl text-green-600 dark:text-green-400">{{Cart::subtotal()}}</td>
+                                <td colspan="3" class="px-6 py-5 text-right font-bold text-gray-500 uppercase text-xs tracking-widest">Total a Pagar:</td>
+                                <td class="px-6 py-5 text-right font-black text-xl text-primary-900">$ {{Cart::subtotal()}}</td>
                                 <td></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
                 
-                <div class="p-6 bg-gray-50 dark:bg-gray-800 text-right">
-                     <a href="{{route('orders.create')}}" class="inline-flex items-center px-8 py-3 bg-secondary text-primary-900 font-bold rounded-xl hover:bg-secondary-400 transition shadow-lg shadow-secondary/20 transform hover:-translate-y-0.5">
-                        Proceder al Pago <i class="fas fa-credit-card ml-2"></i>
+                <div class="p-6 md:p-8 bg-white border-t border-gray-100 relative z-10 flex flex-col sm:flex-row justify-end items-center gap-6">
+                    <span class="text-gray-500 font-medium text-xs flex items-center bg-gray-50 px-3 py-1.5 rounded-md ring-1 ring-gray-100">
+                        <i class="fas fa-lock text-secondary mr-2"></i> Transacción Segura
+                    </span>
+                    <a href="{{route('orders.create')}}" class="inline-flex items-center justify-center px-8 py-3.5 bg-accent text-primary-950 font-extrabold rounded-xl hover:bg-yellow-400 transition-all shadow-md shadow-accent/20 transform hover:-translate-y-0.5 w-full sm:w-auto">
+                        Ir al Pago <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>
 
             @else
-                <div class="flex flex-col items-center justify-center py-16">
-                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-6">
-                        <i class="fas fa-shopping-cart text-gray-400 text-2xl"></i>
+                <div class="flex flex-col items-center justify-center py-16 px-4 relative z-10 text-center">
+                    <div class="w-20 h-20 bg-gray-50 text-gray-400 rounded-2xl flex items-center justify-center mb-5 ring-1 ring-gray-100">
+                        <i class="fas fa-shopping-cart text-2xl"></i>
                     </div>
-                    <p class="text-lg text-gray-500 dark:text-gray-400 font-medium mb-1">Tu carrito está vacío</p>
-                    <a href="/" class="mt-4 text-secondary font-bold hover:text-secondary-400 hover:underline">
-                        Explorar Cursos
+                    <p class="text-xl font-extrabold text-primary-900 mb-2">Tu carrito está vacío</p>
+                    <p class="text-gray-500 mb-6 text-sm">Aún no has añadido ningún curso a tu carrito.</p>
+                    <a href="/" class="inline-flex items-center px-6 py-3 bg-primary-900 text-white font-bold rounded-xl hover:bg-primary-800 transition shadow-md shadow-primary-900/20 text-sm">
+                        <i class="fas fa-search mr-2 text-accent"></i> Explorar Cursos
                     </a>
                 </div>
             @endif

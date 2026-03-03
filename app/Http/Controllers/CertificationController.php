@@ -81,8 +81,17 @@ class CertificationController extends Controller
     public function downloadExam(\App\Models\ExamUserAttempt $attempt)
     {
         // 1. Authorization
-        if ($attempt->user_id !== auth()->id() && !auth()->user()->isAdmin()) { // Assuming isAdmin helper exists or similar logic
-             abort(403);
+        $user = auth()->user();
+        
+        // El usuario puede descargarlo si es el dueño del intento.
+        // O si es un Administrador de Empresa viendo a alguien de su empresa.
+        // O si es un Súper Administrador
+        $isOwner = $attempt->user_id === $user->id;
+        $isCompanyAdmin = $user->hasRole('Administrador de Empresa') && $attempt->user->empresa_id === $user->empresa_id;
+        $isSuperAdmin = $user->hasRole('Administrador'); // Adjust if role name is different
+
+        if (!$isOwner && !$isCompanyAdmin && !$isSuperAdmin) {
+             abort(403, 'No tienes permisos para descargar este certificado.');
         }
 
         // Check for approval (flag set OR score sufficient)

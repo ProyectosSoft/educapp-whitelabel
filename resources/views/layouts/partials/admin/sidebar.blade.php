@@ -175,10 +175,13 @@
         
         <!-- Bottom Section -->
         <div class="mt-auto pt-6 border-t border-gray-50">
-             <div class="flex items-center justify-center p-4 bg-gray-50/50 rounded-2xl border border-gray-100">
-                 <div class="flex items-center space-x-2 text-gray-400 text-xs font-semibold select-none">
-                    <i class="fas fa-shield-alt text-gray-300"></i>
-                    <span>Panel Seguro</span>
+             <div class="flex flex-col items-center justify-center p-3 bg-gray-50/80 rounded-2xl border border-gray-200 shadow-sm transition-all hover:bg-white hover:shadow-md">
+                 <div class="flex items-center space-x-2 text-primary-900 text-xs font-bold select-none mb-1.5">
+                    <i class="fas fa-shield-alt text-secondary text-base"></i>
+                    <span>Panel Administrador</span>
+                 </div>
+                 <div class="text-[10px] text-gray-500 text-center uppercase tracking-wider font-extrabold">
+                    &copy; {{ date('Y') }} Academia Effi
                  </div>
              </div>
         </div>
