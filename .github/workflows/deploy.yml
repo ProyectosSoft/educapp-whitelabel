@@ -29,26 +29,29 @@ jobs:
 
       - name: 🚀 Deploy via SSH
         run: |
-          ssh -p $SSH_PORT -o StrictHostKeyChecking=yes $SSH_USER@$SSH_HOST << 'EOF'
+          ssh -p $SSH_PORT -o StrictHostKeyChecking=yes $SSH_USER@$SSH_HOST << EOF
             set -e
-
+      
             echo "📂 Entrando al proyecto"
             cd "$APP_PATH"
-
+      
+            echo "📍Ruta actual: $(pwd)"
+            ls -la
+      
             echo "📥 Actualizando código"
             git fetch --all
             git reset --hard origin/main
-
+      
             echo "📦 Instalando dependencias PHP"
             composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-
+      
             echo "🧹 Limpiando cachés"
             php artisan optimize:clear || true
             php artisan optimize || true
-
+      
             echo "🗄️ Ejecutando migraciones"
             php artisan migrate --force
-
+      
             echo "🎨 Construyendo assets (Vite)"
             command -v npm >/dev/null 2>&1 || export PATH="$PATH:/usr/bin:/usr/local/bin"
             if [ -f package-lock.json ]; then
@@ -57,9 +60,9 @@ jobs:
               npm install
             fi
             npm run build
-
+      
             echo "🔒 Ajustando permisos"
             chmod -R 775 storage bootstrap/cache || true
-
+      
             echo "✅ Deploy completado"
           EOF
