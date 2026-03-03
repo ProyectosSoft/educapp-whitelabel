@@ -33,7 +33,7 @@ jobs:
             set -e
 
             echo "📂 Entrando al proyecto"
-            cd /var/www/Academia_Effi
+            cd "$APP_PATH"
 
             echo "📥 Actualizando código"
             git fetch --all
@@ -50,6 +50,7 @@ jobs:
             php artisan migrate --force
 
             echo "🎨 Construyendo assets (Vite)"
+            command -v npm >/dev/null 2>&1 || export PATH="$PATH:/usr/bin:/usr/local/bin"
             if [ -f package-lock.json ]; then
               npm ci
             else
@@ -58,7 +59,7 @@ jobs:
             npm run build
 
             echo "🔒 Ajustando permisos"
-            chmod -R ug+rwx storage bootstrap/cache || true
+            chmod -R 775 storage bootstrap/cache || true
 
             echo "✅ Deploy completado"
           EOF
