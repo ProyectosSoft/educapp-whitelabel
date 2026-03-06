@@ -15,7 +15,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
          <link rel="stylesheet" href="{{asset('vendor/fontawesome-free/css/all.min.css')}}">
         <!-- Styles -->
-        <link rel="icon" type="image/png" href="{{ asset('img/cursos/Isotipo_EducApp_3 _V1.png') }}">
+        @include('layouts.partials.head-favicon')
         @livewireStyles
     </head>
     <body class="font-sans antialiased">
