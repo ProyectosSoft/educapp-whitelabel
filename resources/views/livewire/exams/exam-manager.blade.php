@@ -26,9 +26,9 @@
                 <i class="fas fa-tachometer-alt mr-2 text-[#335A92]"></i> Dificultad
             </a>
 
-            <button wire:click="create" class="px-5 py-2.5 bg-[#ECBD2D] text-[#335A92] font-bold rounded-xl hover:bg-yellow-400 transition-all text-sm flex items-center justify-center shadow-md hover:shadow-lg border border-yellow-400 transform hover:-translate-y-0.5">
+            <a href="{{ route('author.exams.manager', ['create' => 1]) }}" class="px-5 py-2.5 bg-[#ECBD2D] text-[#335A92] font-bold rounded-xl hover:bg-yellow-400 transition-all text-sm flex items-center justify-center shadow-md hover:shadow-lg border border-yellow-400 transform hover:-translate-y-0.5">
                 <i class="fas fa-plus-circle mr-2"></i> Nueva Evaluación
-            </button>
+            </a>
         </div>
     </div>
 
@@ -113,7 +113,7 @@
                                     </div>
                                     <h3 class="text-lg font-bold text-slate-700 mb-1">Sin Evaluaciones</h3>
                                     <p class="text-slate-500 font-medium">No se encontraron evaluaciones configuradas.</p>
-                                    <button wire:click="create" class="mt-4 text-[#335A92] font-bold hover:underline">Crear primera evaluación</button>
+                                    <a href="{{ route('author.exams.manager', ['create' => 1]) }}" class="mt-4 text-[#335A92] font-bold hover:underline">Crear primera evaluación</a>
                                 </div>
                             </td>
                         </tr>

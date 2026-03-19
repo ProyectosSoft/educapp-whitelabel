@@ -86,7 +86,7 @@ class ExamManager extends Component
         $this->filterCourseId = request()->integer('course_id') ?: null;
 
         if (request()->boolean('create')) {
-            $this->create();
+            $this->openCreateModal();
 
             if ($this->supportsCourseContext && request('target') === 'course') {
                 $this->evalTargetType = 'course';
@@ -159,7 +159,7 @@ class ExamManager extends Component
         ])->layout('layouts.instructor-tailwind');
     }
 
-    public function create()
+    public function openCreateModal()
     {
         $this->resetInputFields();
         $this->isCreating = true;
