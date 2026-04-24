@@ -256,7 +256,7 @@
                         <div>
                             <p class="font-bold mb-1">¡Faltan Niveles de Dificultad!</p>
                             <p class="text-sm mb-3 opacity-90">No tienes niveles de dificultad configurados. Es necesario tener al menos uno para crear preguntas.</p>
-                            <a href="{{ route('exams.difficulty-levels') }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs font-bold rounded-lg transition border border-yellow-200">
+                            <a href="{{ route('author.exams.difficulty-levels') }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs font-bold rounded-lg transition border border-yellow-200">
                                 <i class="fas fa-external-link-alt mr-2"></i> Configurar Niveles
                             </a>
                         </div>

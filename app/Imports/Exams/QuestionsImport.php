@@ -51,7 +51,7 @@ class QuestionsImport implements ToCollection, WithHeadingRow
                         ]
                     );
 
-                    // 2. Resolver Dificultad (Opcional, busca por nombre)
+                    // 2. Resolver Dificultad. Si no viene o no coincide, usar "Media" por defecto.
                     $difficultyId = null;
                     if (!empty($row['dificultad'])) {
                         $difficultyName = trim($row['dificultad']);
@@ -71,6 +71,8 @@ class QuestionsImport implements ToCollection, WithHeadingRow
                             $difficultyId = $difficulty->id;
                         }
                     }
+
+                    $difficultyId = $difficultyId ?: $this->defaultDifficultyLevelId();
 
                     // 3. Normalizar Tipo
                     $tipoInput = isset($row['tipo']) ? strtolower(trim($row['tipo'])) : 'cerrada';
@@ -124,5 +126,18 @@ class QuestionsImport implements ToCollection, WithHeadingRow
                 ]);
             }
         }
+    }
+
+    private function defaultDifficultyLevelId(): int
+    {
+        return ExamDifficultyLevel::firstOrCreate(
+            [
+                'user_id' => $this->userId,
+                'name' => 'Media',
+            ],
+            [
+                'points' => 5,
+            ]
+        )->id;
     }
 }
