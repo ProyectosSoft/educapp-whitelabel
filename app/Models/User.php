@@ -31,6 +31,11 @@ class User extends Authenticatable //implements MustVerifyEmail
         'password',
         'departamento_id',
         'empresa_id',
+        'terms_accepted_at',
+        'privacy_policy_accepted_at',
+        'data_processing_accepted_at',
+        'data_processing_consent_version',
+        'data_processing_accepted_ip',
     ];
 
     /**
@@ -52,6 +57,9 @@ class User extends Authenticatable //implements MustVerifyEmail
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'terms_accepted_at' => 'datetime',
+        'privacy_policy_accepted_at' => 'datetime',
+        'data_processing_accepted_at' => 'datetime',
     ];
 
     /**

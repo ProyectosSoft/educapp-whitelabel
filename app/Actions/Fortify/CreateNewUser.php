@@ -57,6 +57,11 @@ class CreateNewUser implements CreatesNewUsers
             'password' => Hash::make($input['password']),
             'departamento_id' => $input['departamento_id'] ?? null,
             'empresa_id' => $invitation ? $invitation->empresa_id : null,
+            'terms_accepted_at' => now(),
+            'privacy_policy_accepted_at' => now(),
+            'data_processing_accepted_at' => now(),
+            'data_processing_consent_version' => '2026-04',
+            'data_processing_accepted_ip' => request()->ip(),
         ]);
 
         // Consume invitation

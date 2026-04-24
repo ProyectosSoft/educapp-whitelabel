@@ -68,6 +68,11 @@ class BusinessController extends Controller
                 'password' => Hash::make($request->password),
                 'empresa_id' => $empresa->id,
                 'departamento_id' => $departamento->id,
+                'terms_accepted_at' => now(),
+                'privacy_policy_accepted_at' => now(),
+                'data_processing_accepted_at' => now(),
+                'data_processing_consent_version' => '2026-04',
+                'data_processing_accepted_ip' => $request->ip(),
             ]);
 
             // 4. Assign Role

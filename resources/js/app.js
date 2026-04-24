@@ -41,6 +41,14 @@ window.confirmAction = (options = {}) => {
 
 import Alpine from 'alpinejs';
 import focus from '@alpinejs/focus';
+
+// Livewire 2 expects Alpine to boot after Livewire has initialized.
+// Without this bridge, `wire:click` interactions can fail intermittently
+// on pages that mix full-page Livewire components with Alpine state.
+window.deferLoadingAlpine = (callback) => {
+    window.addEventListener('livewire:load', callback);
+};
+
 window.Alpine = Alpine;
 
 Alpine.plugin(focus);
