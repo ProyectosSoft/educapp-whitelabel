@@ -73,7 +73,18 @@
                 @endif
             @endif
         </div>
+        @php
+            $currentSectionId = null;
+
+            if ($current) {
+                $currentSectionId = $current->seccion_curso_id ?? optional($course->Seccion_curso->first(function ($section) use ($current) {
+                    return $section->Leccioncurso->contains('id', $current->id);
+                }))->id;
+            }
+        @endphp
+
         <aside class="lg:sticky lg:top-24 self-start bg-greenLime_400 shadow-lg rounded-3xl overflow-hidden flex flex-col"
+               x-data="{ openSection: {{ $currentSectionId ?? 'null' }} }"
                style="height: min(760px, calc(100vh - 7rem)); min-height: 520px;">
             <div class="px-6 py-4 flex flex-col" style="height: 100%; min-height: 0;">
                 <h1 class="text-2xl leading-8 font-black text-center mb-4 text-greenLime_50">{{ $course->nombre }}</h1>
@@ -100,24 +111,31 @@
                 <div class="pr-2 space-y-4" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.65) transparent;">
                     <ul>
                         @foreach ($course->Seccion_curso as $seccion)
-                            <li class="text-gray-600 mb-4">
+                            <li class="text-gray-600 mb-3">
                                 @php
                                     $totalSection = $seccion->Leccioncurso->count();
                                     $completedSection = $seccion->Leccioncurso->filter(function($l) { return $l->completed; })->count();
                                     $sectionPercent = $totalSection > 0 ? round(($completedSection / $totalSection) * 100) : 0;
+                                    $sectionExamEvaluations = $seccion->examEvaluations->where('is_active', true);
                                 @endphp
 
-                                <div class="mb-2">
-                                    <a class="font-bold text-base block text-white opacity-90">{{ $seccion->nombre }}</a>
+                                <button type="button"
+                                        class="w-full text-left mb-2"
+                                        @click="openSection = openSection === {{ $seccion->id }} ? null : {{ $seccion->id }}">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="font-bold text-base block text-white opacity-90">{{ $seccion->nombre }}</span>
+                                        <i class="fas fa-chevron-down text-xs text-white opacity-80 transition-transform"
+                                           :class="{ 'rotate-180': openSection === {{ $seccion->id }} }"></i>
+                                    </div>
                                     <div class="flex items-center mt-1 pr-4">
                                         <div class="w-full bg-gray-600 rounded-full h-1.5 mr-2">
                                             <div class="{{ $sectionPercent == 100 ? 'bg-green-400' : 'bg-orange-400' }} h-1.5 rounded-full transition-all duration-500" style="width: {{ $sectionPercent }}%"></div>
                                         </div>
                                         <span class="text-xs text-white opacity-80 min-w-[2rem] text-right">{{ $sectionPercent }}%</span>
                                     </div>
-                                </div>
+                                </button>
 
-                                <ul>
+                                <ul x-cloak x-show="openSection === {{ $seccion->id }}">
                                     @foreach ($seccion->Leccioncurso as $leccion)
                                         <li class="flex mb-1 text-white {{ $current && $current->id == $leccion->id ? 'opacity-100 font-bold' : 'opacity-60' }}">
                                             <div>
@@ -143,57 +161,53 @@
                                             </a>
                                         </li>
                                     @endforeach
+
+                                    @foreach($sectionExamEvaluations as $evaluation)
+                                        @if($evaluation->start_mode == 'manual' && !$evaluation->is_visible)
+                                            @continue
+                                        @endif
+
+                                        <li class="flex mb-1 text-white opacity-60">
+                                            <div>
+                                                <span class="inline-block w-4 h-4 bg-purple-500 rounded-full mr-2"></span>
+                                            </div>
+                                            @if(!$this->isExamEvaluationUnlocked($evaluation))
+                                                <span class="cursor-not-allowed text-gray-300" title="Debes completar el 100% del curso">
+                                                    <i class="fas fa-lock mr-2"></i> {{ $evaluation->name }}
+                                                </span>
+                                            @else
+                                                <a class="cursor-pointer" wire:click="showEvaluation({{ $evaluation->id }})">
+                                                    <i class="fas fa-tasks mr-2"></i> {{ $evaluation->name }}
+                                                </a>
+                                            @endif
+                                        </li>
+                                    @endforeach
+
+                                    @if($sectionExamEvaluations->isEmpty() && $seccion->evaluations->count() > 0)
+                                        @foreach($seccion->evaluations as $evaluation)
+                                            @if($evaluation->start_mode == 'manual' && !$evaluation->is_visible)
+                                                @continue
+                                            @endif
+
+                                            <li class="flex mb-1 text-white opacity-60">
+                                                <div>
+                                                    <span class="inline-block w-4 h-4 bg-purple-500 rounded-full mr-2"></span>
+                                                </div>
+                                                @if(!$this->isLegacyEvaluationUnlocked($evaluation))
+                                                    <span class="cursor-not-allowed text-gray-300" title="Debes completar el 100% del curso">
+                                                        <i class="fas fa-lock mr-2"></i> {{ $evaluation->name }}
+                                                    </span>
+                                                @else
+                                                    <a class="cursor-pointer {{ $currentEvaluation && $currentEvaluation->id == $evaluation->id ? 'text-purple-300 font-bold' : '' }}"
+                                                       wire:click="showLegacyEvaluation({{ $evaluation->id }})">
+                                                        <i class="fas fa-tasks mr-2"></i> {{ $evaluation->name }}
+                                                    </a>
+                                                @endif
+                                            </li>
+                                        @endforeach
+                                    @endif
                                 </ul>
                             </li>
-
-                            @php
-                                $sectionExamEvaluations = $seccion->examEvaluations->where('is_active', true);
-                            @endphp
-
-                            @foreach($sectionExamEvaluations as $evaluation)
-                                @if($evaluation->start_mode == 'manual' && !$evaluation->is_visible)
-                                    @continue
-                                @endif
-
-                                <li class="flex mb-1 text-white opacity-60">
-                                    <div>
-                                        <span class="inline-block w-4 h-4 bg-purple-500 rounded-full mr-2"></span>
-                                    </div>
-                                    @if(!$this->isExamEvaluationUnlocked($evaluation))
-                                        <span class="cursor-not-allowed text-gray-300" title="Debes completar el 100% del curso">
-                                            <i class="fas fa-lock mr-2"></i> {{ $evaluation->name }}
-                                        </span>
-                                    @else
-                                        <a class="cursor-pointer" wire:click="showEvaluation({{ $evaluation->id }})">
-                                            <i class="fas fa-tasks mr-2"></i> {{ $evaluation->name }}
-                                        </a>
-                                    @endif
-                                </li>
-                            @endforeach
-
-                            @if($sectionExamEvaluations->isEmpty() && $seccion->evaluations->count() > 0)
-                                @foreach($seccion->evaluations as $evaluation)
-                                    @if($evaluation->start_mode == 'manual' && !$evaluation->is_visible)
-                                        @continue
-                                    @endif
-
-                                    <li class="flex mb-1 text-white opacity-60">
-                                        <div>
-                                            <span class="inline-block w-4 h-4 bg-purple-500 rounded-full mr-2"></span>
-                                        </div>
-                                        @if(!$this->isLegacyEvaluationUnlocked($evaluation))
-                                            <span class="cursor-not-allowed text-gray-300" title="Debes completar el 100% del curso">
-                                                <i class="fas fa-lock mr-2"></i> {{ $evaluation->name }}
-                                            </span>
-                                        @else
-                                            <a class="cursor-pointer {{ $currentEvaluation && $currentEvaluation->id == $evaluation->id ? 'text-purple-300 font-bold' : '' }}"
-                                               wire:click="showLegacyEvaluation({{ $evaluation->id }})">
-                                                <i class="fas fa-tasks mr-2"></i> {{ $evaluation->name }}
-                                            </a>
-                                        @endif
-                                    </li>
-                                @endforeach
-                            @endif
                         @endforeach
 
                         @php
