@@ -134,9 +134,10 @@
                                     </div>
                                     <div class="flex items-center mt-2">
                                         <div class="w-full rounded-full h-1.5 mr-2" style="background: rgba(255,255,255,.28);">
-                                            <div class="h-1.5 rounded-full transition-all duration-500" style="width: {{ $sectionPercent }}%; background-color: {{ $sectionPercent == 100 ? '#FFFFFF' : '#FFC107' }};"></div>
+                                            <div class="h-1.5 rounded-full transition-all duration-500" style="width: {{ $sectionPercent }}%; background-color: #FFC107;"></div>
                                         </div>
-                                        <span class="text-xs text-white opacity-90 min-w-[2rem] text-right">{{ $sectionPercent }}%</span>
+                                        <span class="text-xs font-bold min-w-[2rem] text-right {{ $sectionPercent == 100 ? 'rounded-full px-2 py-0.5' : 'text-white opacity-90' }}"
+                                              style="{{ $sectionPercent == 100 ? 'background-color: #FFC107; color: #335A92;' : '' }}">{{ $sectionPercent }}%</span>
                                     </div>
                                 </button>
 
