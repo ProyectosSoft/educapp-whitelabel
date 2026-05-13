@@ -73,8 +73,8 @@
                 @endif
             @endif
         </div>
-        <aside class="lg:sticky lg:top-24 self-start bg-greenLime_400 shadow-lg rounded-3xl overflow-hidden">
-            <div class="px-6 py-4">
+        <aside class="lg:sticky lg:top-24 self-start bg-greenLime_400 shadow-lg rounded-3xl overflow-hidden max-h-[70vh] lg:h-[calc(100vh-7rem)] lg:max-h-[760px] lg:min-h-[520px] flex flex-col">
+            <div class="px-6 py-4 min-h-0 flex-1 flex flex-col">
                 <h1 class="text-2xl leading-8 font-black text-center mb-4 text-greenLime_50">{{ $course->nombre }}</h1>
                 <div class="flex items-center">
                     <figure>
@@ -96,7 +96,7 @@
                     </div>
                 </div>
 
-                <div class="max-h-[calc(100vh-18rem)] overflow-y-auto pr-2 space-y-4">
+                <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-2 space-y-4 [scrollbar-color:rgba(255,255,255,.55)_transparent] [scrollbar-width:thin]">
                     <ul>
                         @foreach ($course->Seccion_curso as $seccion)
                             <li class="text-gray-600 mb-4">
