@@ -102,8 +102,8 @@
                 <p class="text-white text-sm mt-2">{{ $this->advance . '%' }} completado</p>
                 <div class="relative pt-1">
                     <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
-                        <div style="width:{{ $this->advance . '%' }}"
-                            class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-orange-400 transition-all duration-500">
+                        <div style="width:{{ $this->advance . '%' }}; background-color: #FFC107;"
+                            class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center transition-all duration-500">
                         </div>
                     </div>
                 </div>
@@ -134,7 +134,7 @@
                                     </div>
                                     <div class="flex items-center mt-2">
                                         <div class="w-full rounded-full h-1.5 mr-2" style="background: rgba(255,255,255,.28);">
-                                            <div class="{{ $sectionPercent == 100 ? 'bg-green-400' : 'bg-orange-400' }} h-1.5 rounded-full transition-all duration-500" style="width: {{ $sectionPercent }}%"></div>
+                                            <div class="h-1.5 rounded-full transition-all duration-500" style="width: {{ $sectionPercent }}%; background-color: {{ $sectionPercent == 100 ? '#FFFFFF' : '#FFC107' }};"></div>
                                         </div>
                                         <span class="text-xs text-white opacity-90 min-w-[2rem] text-right">{{ $sectionPercent }}%</span>
                                     </div>
