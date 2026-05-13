@@ -111,7 +111,7 @@
                 <div class="pr-2 space-y-3" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.65) transparent;">
                     <ul>
                         @foreach ($course->Seccion_curso as $seccion)
-                            <li class="text-gray-600 mb-3 rounded-xl bg-white bg-opacity-10 px-3 py-2">
+                            <li class="text-gray-600 mb-3 rounded-xl px-3 py-2" style="background: rgba(255,255,255,.10);">
                                 @php
                                     $totalSection = $seccion->Leccioncurso->count();
                                     $completedSection = $seccion->Leccioncurso->filter(function($l) { return $l->completed; })->count();
@@ -125,7 +125,7 @@
                                     <div class="flex items-center justify-between gap-2">
                                         <span class="font-bold text-base block text-white opacity-95 leading-5">{{ $seccion->nombre }}</span>
                                         <span class="flex items-center gap-2 shrink-0">
-                                            <span class="rounded-full bg-white bg-opacity-20 px-2 py-0.5 text-[11px] font-semibold text-white">
+                                            <span class="rounded-full px-2 py-0.5 text-[11px] font-semibold text-white" style="background: rgba(255,255,255,.20);">
                                                 {{ $totalSection }} {{ $totalSection == 1 ? 'item' : 'items' }}
                                             </span>
                                             <i class="fas fa-chevron-down text-xs text-white opacity-80 transition-transform"
@@ -140,7 +140,7 @@
                                     </div>
                                 </button>
 
-                                <ul class="mt-2 border-t border-white border-opacity-10 pt-2" x-cloak x-show="openSection === {{ $seccion->id }}">
+                                <ul class="mt-2 pt-2" style="border-top: 1px solid rgba(255,255,255,.12);" x-cloak x-show="openSection === {{ $seccion->id }}">
                                     @foreach ($seccion->Leccioncurso as $leccion)
                                         <li class="flex mb-1 text-white {{ $current && $current->id == $leccion->id ? 'opacity-100 font-bold' : 'opacity-60' }}">
                                             <div>
