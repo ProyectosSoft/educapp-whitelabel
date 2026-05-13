@@ -108,10 +108,10 @@
                     </div>
                 </div>
 
-                <div class="pr-2 space-y-4" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.65) transparent;">
+                <div class="pr-2 space-y-3" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.65) transparent;">
                     <ul>
                         @foreach ($course->Seccion_curso as $seccion)
-                            <li class="text-gray-600 mb-3">
+                            <li class="text-gray-600 mb-3 rounded-xl bg-white bg-opacity-10 px-3 py-2">
                                 @php
                                     $totalSection = $seccion->Leccioncurso->count();
                                     $completedSection = $seccion->Leccioncurso->filter(function($l) { return $l->completed; })->count();
@@ -120,22 +120,27 @@
                                 @endphp
 
                                 <button type="button"
-                                        class="w-full text-left mb-2"
+                                        class="w-full text-left"
                                         @click="openSection = openSection === {{ $seccion->id }} ? null : {{ $seccion->id }}">
                                     <div class="flex items-center justify-between gap-2">
-                                        <span class="font-bold text-base block text-white opacity-90">{{ $seccion->nombre }}</span>
-                                        <i class="fas fa-chevron-down text-xs text-white opacity-80 transition-transform"
-                                           :class="{ 'rotate-180': openSection === {{ $seccion->id }} }"></i>
+                                        <span class="font-bold text-base block text-white opacity-95 leading-5">{{ $seccion->nombre }}</span>
+                                        <span class="flex items-center gap-2 shrink-0">
+                                            <span class="rounded-full bg-white bg-opacity-20 px-2 py-0.5 text-[11px] font-semibold text-white">
+                                                {{ $totalSection }} {{ $totalSection == 1 ? 'item' : 'items' }}
+                                            </span>
+                                            <i class="fas fa-chevron-down text-xs text-white opacity-80 transition-transform"
+                                               :class="{ 'rotate-180': openSection === {{ $seccion->id }} }"></i>
+                                        </span>
                                     </div>
-                                    <div class="flex items-center mt-1 pr-4">
-                                        <div class="w-full bg-gray-600 rounded-full h-1.5 mr-2">
+                                    <div class="flex items-center mt-2">
+                                        <div class="w-full rounded-full h-1.5 mr-2" style="background: rgba(255,255,255,.28);">
                                             <div class="{{ $sectionPercent == 100 ? 'bg-green-400' : 'bg-orange-400' }} h-1.5 rounded-full transition-all duration-500" style="width: {{ $sectionPercent }}%"></div>
                                         </div>
-                                        <span class="text-xs text-white opacity-80 min-w-[2rem] text-right">{{ $sectionPercent }}%</span>
+                                        <span class="text-xs text-white opacity-90 min-w-[2rem] text-right">{{ $sectionPercent }}%</span>
                                     </div>
                                 </button>
 
-                                <ul x-cloak x-show="openSection === {{ $seccion->id }}">
+                                <ul class="mt-2 border-t border-white border-opacity-10 pt-2" x-cloak x-show="openSection === {{ $seccion->id }}">
                                     @foreach ($seccion->Leccioncurso as $leccion)
                                         <li class="flex mb-1 text-white {{ $current && $current->id == $leccion->id ? 'opacity-100 font-bold' : 'opacity-60' }}">
                                             <div>
