@@ -73,8 +73,9 @@
                 @endif
             @endif
         </div>
-        <aside class="lg:sticky lg:top-24 self-start bg-greenLime_400 shadow-lg rounded-3xl overflow-hidden max-h-[70vh] lg:h-[calc(100vh-7rem)] lg:max-h-[760px] lg:min-h-[520px] flex flex-col">
-            <div class="px-6 py-4 min-h-0 flex-1 flex flex-col">
+        <aside class="lg:sticky lg:top-24 self-start bg-greenLime_400 shadow-lg rounded-3xl overflow-hidden flex flex-col"
+               style="height: min(760px, calc(100vh - 7rem)); min-height: 520px;">
+            <div class="px-6 py-4 flex flex-col" style="height: 100%; min-height: 0;">
                 <h1 class="text-2xl leading-8 font-black text-center mb-4 text-greenLime_50">{{ $course->nombre }}</h1>
                 <div class="flex items-center">
                     <figure>
@@ -96,7 +97,7 @@
                     </div>
                 </div>
 
-                <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-2 space-y-4 [scrollbar-color:rgba(255,255,255,.55)_transparent] [scrollbar-width:thin]">
+                <div class="pr-2 space-y-4" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.65) transparent;">
                     <ul>
                         @foreach ($course->Seccion_curso as $seccion)
                             <li class="text-gray-600 mb-4">
