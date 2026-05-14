@@ -22,6 +22,7 @@ class QuestionBank extends Component
     use WithPagination, WithFileUploads;
     
     public $search = '';
+    public $searchBy = 'category';
     public $viewDeleted = false; // Toggle for deleted questions
 
     // -- Category State --
@@ -132,12 +133,42 @@ class QuestionBank extends Component
             ->get();
     }
 
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSearchBy()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedViewDeleted()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         // Fetch categories with dynamic relation for questions
         // Fetch categories with dynamic relation for questions
-        $categoriesQuery = ExamCategory::where('user_id', Auth::id())
-            ->where('name', 'like', '%'.$this->search.'%');
+        $categoriesQuery = ExamCategory::where('user_id', Auth::id());
+
+        $search = trim($this->search);
+
+        if ($search !== '') {
+            if ($this->searchBy === 'question') {
+                $categoriesQuery->whereHas('questions', function ($query) use ($search) {
+                    if ($this->viewDeleted) {
+                        $query->onlyTrashed();
+                    }
+
+                    $query->where('question_text', 'like', '%'.$search.'%');
+                });
+            } else {
+                $categoriesQuery->where('name', 'like', '%'.$search.'%');
+            }
+        }
             
         if ($this->viewDeleted) {
             $categoriesQuery->withTrashed()

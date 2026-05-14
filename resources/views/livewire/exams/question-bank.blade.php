@@ -11,13 +11,24 @@
         </div>
         
         <div class="relative z-10 flex flex-col md:flex-row gap-3 w-full md:w-auto items-center">
+             <div class="relative w-full md:w-52">
+                <select wire:model="searchBy"
+                        class="w-full bg-slate-50 border border-gray-200 text-slate-700 text-sm rounded-xl focus:ring-[#335A92] focus:border-[#335A92] block p-2.5 pr-9 transition-all shadow-sm focus:bg-white appearance-none">
+                    <option value="category">Nombre de categoría</option>
+                    <option value="question">Enunciado de pregunta</option>
+                </select>
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                    <i class="fas fa-chevron-down text-xs"></i>
+                </span>
+            </div>
+
              <div class="relative w-full md:w-auto">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <i class="fas fa-search text-slate-400"></i>
                 </span>
                 <input wire:model="search" type="text" 
                        class="w-full md:w-64 bg-slate-50 border border-gray-200 text-slate-700 text-sm rounded-xl focus:ring-[#335A92] focus:border-[#335A92] block pl-10 p-2.5 placeholder-slate-400 transition-all shadow-sm focus:bg-white" 
-                       placeholder="Buscar categoría...">
+                       placeholder="{{ $searchBy === 'category' ? 'Buscar categoría...' : 'Buscar pregunta...' }}">
             </div>
 
             <button wire:click="$set('showImportModal', true)" class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 transition-all shadow-sm">
